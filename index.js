@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const errorMiddleware=require('./middleware/errormiddleware')
 const express = require('express');
 const app = express();
 
@@ -12,13 +12,15 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const router = require('./routes/userRoute.js');
 const route = require('./routes/router.js')
 const authRoute = require('./routes/authRoute.js')
 const mongoose = require('./db.js');
 
 
-
-app.use('/api',route)
+app.use(errorMiddleware)
+app.use('/api', route)
+app.use('/',router);
 app.use('/',authRoute);
 
 
