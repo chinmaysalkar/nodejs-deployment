@@ -1,31 +1,33 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
-const router = require('./routes/userRoutes')
-const cors = require('cors');
-app.use(cors());
-
-const PORT = 3000;
-
-
-//connection to database
-mongoose
-    .connect("mongodb://localhost:27017/basic")
-    .then(()=>{
-        console.log("Connected to db")
-    }
-    )
-    .catch((err)=>{
-        console.log(err);
-    })
-
 
 app.set('view engine', 'ejs');
-app.use(express.json());
-app.use('/api', router);
+app.set('views', './views');
+
+const port = process.env.SERVER_PORT || 3000;
+
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const route = require('./routes/router.js')
+const authRoute = require('./routes/authRoute.js')
+const mongoose = require('./db.js');
 
 
-app.listen(PORT,()=>{
-    console.log(`Server has been started on http://localhost:${PORT}`)
+
+app.use('/api',route)
+app.use('/',authRoute);
+
+
+
+
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
+
+
 
