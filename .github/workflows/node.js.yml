@@ -17,5 +17,3 @@ jobs:
           node-version: 16.16.0
       - name: Install dependencies
         run: npm install
-        
-      - run: npm run build
