@@ -23,6 +23,9 @@ app.use('/api', route)
 app.use('/',router);
 app.use('/',authRoute);
 
+app.get('/', (req, res) => {
+  res.send('index');
+});
 
 
 
