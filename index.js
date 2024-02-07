@@ -1,33 +1,33 @@
 require('dotenv').config();
-
+const errorMiddleware=require('./middlewares/errormiddleware.js')
 const express = require('express');
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-const port = process.env.SERVER_PORT || 3000;
+const port = process.env.SERVER_PORT || 5500;
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const route = require('./routes/router.js')
-const authRoute = require('./routes/authRoute.js')
+const router = require('./routes/client/clientRoutes.js');
+const route = require('./routes/user/userRoutes.js');
+const authRoute = require('./routes/user/authRoute.js');
 const mongoose = require('./db.js');
 
 
+app.use(errorMiddleware)
+app.use('/api', route)
+app.use('/client',router);
+app.use('/auth',authRoute);
 
-app.use('/api',route)
-app.use('/',authRoute);
-
-
-
+app.get('/', (req, res) => {
+  res.send('index');
+});
 
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-
-

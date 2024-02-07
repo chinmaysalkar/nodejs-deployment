@@ -1,29 +1,29 @@
 const express=require("express")
 const router=express.Router();
-const usercontroller=require("../controller/")
+const {createClients,searchClients,getClientData,updateClient,dropClient,createData,getAllData,searchProject,updateProject,dropProject,addNewTask,searchTask,updateTaskboard,dropTask,addNewTicket,searchTickets,getAllTicketData, getAllTaskData}=require("../../controllers/clientController.js")
 
 //client
-router.post("/clients", usercontroller.createClients)
-router.get('/clientData',usercontroller.getClientData)
-router.get('/searchClient/:key', usercontroller.searchClients)
-router.put("/updateClient/:clientId", usercontroller.updateClient)
- router.delete("/dropClient/:clientId",usercontroller.dropClient )
+router.post("/clients", createClients)
+router.get('/clientData', getClientData)
+router.get('/searchClient/:key', searchClients)
+router.put("/updateClient/:clientId", updateClient)
+ router.delete("/dropClient/:clientId", dropClient )
 //project
-router.post("/pDetails/:clientId", usercontroller.createData)
-router.get('/pData', usercontroller.getAllData)
-router.get('/searchProject/:key', usercontroller.searchProject)
-router.put("/updateProject/:projectId", usercontroller.updateProject)
-router.delete("/dropProject/:projectId",usercontroller.dropProject)
+router.post("/pDetails/:clientId", createData)
+router.get('/pData', getAllData)
+router.get('/searchProject/:key', searchProject)
+router.put("/updateProject/:projectId", updateProject)
+router.delete("/dropProject/:projectId",dropProject)
 
 //taskboard
-router.post("/addTask", usercontroller.addNewTask)
-router.get('/taskData', usercontroller.getAllTaskData)
-router.get('/searchTrackboard/:key', usercontroller.searchTask)
-router.put("/updateTaskboard/:taskId", usercontroller.updateTaskboard)
-router.delete("/droptask/:taskId", usercontroller.dropTask)
+router.post("/addTask", addNewTask)
+router.get('/taskData', getAllTaskData)
+router.get('/searchTrackboard/:key', searchTask)
+router.put("/updateTaskboard/:taskId", updateTaskboard)
+router.delete("/droptask/:taskId", dropTask)
 
 //ticket
-router.post("/addTicket", usercontroller.addNewTicket)
-router.get('/ticketData', usercontroller.getAllTicketData)
-router.get('/searchTicket/:key', usercontroller.searchTickets)
+router.post("/addTicket", addNewTicket)
+router.get('/ticketData', getAllTicketData)
+router.get('/searchTicket/:key', searchTickets)
 module.exports= router;

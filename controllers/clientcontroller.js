@@ -1,10 +1,10 @@
-const Project = require("../model/projectSchema");
-const Client = require("../model/clientSchema");
-const Taskboard = require("../model/taskboard");
+const Project = require("../models/client/projectSchema");
+const Client = require("../models/client/clientSchema");
+const Taskboard = require("../models/client/taskboard");
 const bodyParser = require("body-parser");
 // const { param } = require("../routes/userRoute");
-const ticketList = require("../model/ticketList");
-const toDoList = require("../model/todoList");
+const ticketList = require("../models/client/ticketList");
+const toDoList = require("../models/client/todoList");
 
   //project
   const createData =  async (req, res) => {
@@ -399,5 +399,5 @@ module.exports = {
   addTodoList,
   getClientData,
   updateClient,
-  dropClient,
+  dropClient
 }

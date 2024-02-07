@@ -14,7 +14,7 @@ const userValidation = [
 ];
 
 const mailVerificationValidation = [
-    check("email","Please enter valid email").isEmail(),
+    check("email","Please enter valid email").isEmpty(),
 ];
 
 const loginValidation =[
