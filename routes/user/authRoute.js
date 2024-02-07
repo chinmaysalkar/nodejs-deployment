@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {mailVerification, resetPassword, updatePassword, resetSuccess} = require('../controllers/userController.js')
-const {mailVerificationValidation} = require('../helpers/validation.js');
+const {mailVerification, resetPassword, updatePassword, resetSuccess} = require('../../controllers/userController.js')
+const {mailVerificationValidation} = require('../../helpers/validation.js');
 
 
 

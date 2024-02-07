@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
-const User = require('../models/usermodel'); // Assuming you have a User model
-const Blacklist = require('../models/blacklist.js')
+const User = require('../models/user/usermodel.js'); // Assuming you have a User model
+const Blacklist = require('../models/user/blacklist.js')
 const {oneMinuteExpiry, threeMinuteExpiry} = require('../helpers/otpValidate.js');
-const Otp = require('../models/otp.js')
+const Otp = require('../models/user/otp.js')
 const {validationResult} = require('express-validator');
 const {sendMail} = require('../helpers/mailer.js');
 const saltRounds = 10;
 const randomstring = require('randomstring');
-const passwordReset = require('../models/passwordReset');
+const passwordReset = require('../models/user/passwordReset.js');
 const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {createUser, forgetPassword, loginUser, userProfile, updateProfile, logout, sendOtp, verifyOtp} = require('../controllers/userController.js')
-const { userValidation,mailVerificationValidation, loginValidation, updateProfileValidation, otpValidation} = require('../helpers/validation.js');
-const {verifyToken} = require('../middlewares/auth.js');
+const {createUser, forgetPassword, loginUser, userProfile, updateProfile, logout, sendOtp, verifyOtp} = require('../../controllers/userController.js')
+const { userValidation,mailVerificationValidation, loginValidation, updateProfileValidation, otpValidation} = require('../../helpers/validation.js');
+const {verifyToken} = require('../../middlewares/auth.js');
 
 //Creating new user
 router.post('/addUser',userValidation , createUser);
