@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 // const { param } = require("../routes/userRoute");
 const ticketList = require("../model/ticketList");
 const toDoList = require("../model/todoList");
-const usercontroller={
+
 
     //project
     createData: async (req,res)=>{
@@ -27,7 +27,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json({message:"internal server error", error})
         }
-    },
+    }
     getAllData: async (req, res) => {
         try {
             const project = await Project.find()
@@ -37,7 +37,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json({ message: "internal server error", error })
         }
-    },
+    }
     searchProject: async (req,res)=>{
         try{
             const key = req.params.key;
@@ -53,7 +53,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json({ message: "internal server error", error })
         }
-    },
+    }
     updateProject: async (req, res) => {
         try {
             const projectIdToUpdate = req.params.projectId
@@ -101,7 +101,7 @@ const usercontroller={
 
 
         }
-    },
+    }
     dropProject: async (req, res) => {
         try {
             const deleteProject = await Project.findByIdAndDelete(req.params.projectId)
@@ -114,7 +114,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
   
 
     //client
@@ -128,7 +128,7 @@ const usercontroller={
                 console.error(error)
                 res.status(500).json({message:"internal server error", error})
              }
-    },
+    }
     getClientData:async(req,res)=>{
         try{
             const clients = await Client.find().populate({ path: 'projects', model: 'Project' })
@@ -153,7 +153,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json({ message: "internal server error", error })
         }
-    },
+    }
     searchClients: async (req, res) => {
         try {
             const key = req.params.key;
@@ -168,7 +168,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json({ message: "internal server error", error })
         }
-    },
+    }
     updateClient: async (req,res)=>{
         try{
             const client =await Client.findById (req.params.clientId)
@@ -189,7 +189,7 @@ const usercontroller={
             res.status(500).json({ message: "internal server error", error })
         }
 
-    },
+    }
     dropClient: async (req, res) => {
         try {
             const dropClient = await Client.findByIdAndDelete(req.params.clientId)
@@ -202,7 +202,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
    
 
    
@@ -218,7 +218,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
     getAllTaskData: async(req,res)=>{
         try{
             const taskData= await Taskboard.find()
@@ -228,7 +228,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
     updateTaskboard: async (req,res)=>{
         try{
             const task= await Taskboard.findById(req.params.taskId)
@@ -249,7 +249,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
    searchTask: async(req,res)=>{
        try {
            const key = req.params.key;
@@ -264,7 +264,7 @@ const usercontroller={
            console.error(error)
            res.status(500).json({ message: "internal server error", error })
        }
-    },
+    }
      dropTask: async (req,res)=>{
         try{
             const deleteTask = await Taskboard.findByIdAndDelete(req.params.taskId)
@@ -278,7 +278,7 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
 
     //ticket 
     addNewTicket: async (req,res)=>{
@@ -298,7 +298,7 @@ const usercontroller={
             res.status(500).json("internal server error", error)
         }
 
-    },
+    }
     searchTickets: async(req, res)=> {
     try {
         const key = req.params.key;
@@ -313,7 +313,7 @@ const usercontroller={
         console.error(error)
         res.status(500).json({ message: "internal server error", error })
     }
-    },
+    }
     getAllTicketData: async (req, res) => {
         try {
             const ticketData = await ticketList.find()
@@ -323,10 +323,10 @@ const usercontroller={
             console.error(error)
             res.status(500).json("internal server error", error)
         }
-    },
+    }
 
     //todolist
-    addTodoList:async (req,res)=>{
+    const addTodoList =async (req,res)=>{
         try{
             const newlist= new toDoList(req.body)
             const result =await newlist.save()
@@ -339,5 +339,5 @@ const usercontroller={
     }
 
     
-}
+
 module.exports=usercontroller;
