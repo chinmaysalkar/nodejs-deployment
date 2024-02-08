@@ -3,13 +3,11 @@ const User = require('../models/user/usermodel');
 const { validationResult } = require('express-validator');
 const { oneMinuteExpiry, threeMinuteExpiry } = require('../middlewares/otpExpiry');
 const {sendMail} = require('../middlewares/mailer.js');
+const {generateRandom4digit} = require('../middlewares/helpers.js');
 
 
 
 
-const generateRandom4digit = async (req, res) => {
-    return Math.floor( 1000+ Math.random() *9000);
-}
 
 const sendOtp = async(req, res) => {
     try {

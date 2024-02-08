@@ -1,14 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator');
-
+const Profile = require('../models/user/profileSchema.js');
 //model imported
 const User = require('../models/user/usermodel.js'); 
 
 const {sendMail} = require('../middlewares/mailer.js');
-
-
-
 
 const createUser = async (req, res) => {
     try {
@@ -124,10 +121,15 @@ const deleteUser = async (req, res) => {
         const deletedUser = await User.findByIdAndDelete({_id:req.user.user._id});
 
         if (!deletedUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        await Profile.findOneAndDelete({ email: deletedUser.email });
+
+        if (!deletedUser) {
             return res.status(404).json({ success: false, error: 'User already deleted' });
         }
         
-        res.status(200).json({ success: true, message: "User deleted successfully" });
+        res.status(200).json({ success: true, message: "User and his/her profile deleted successfully" });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }

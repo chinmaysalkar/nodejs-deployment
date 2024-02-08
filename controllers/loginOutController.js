@@ -33,7 +33,7 @@ const loginUser = async (req, res) => {
         if(userData.isVerified==0){
             return res.status(404).json({ 
                 success: false, 
-                error: 'Please Verify your Email' 
+                error: 'Please Verify your Email, get the otp' 
             });
         }
 

@@ -1,20 +1,24 @@
 const mongoose = require('mongoose');
 
 const placeOrderSchema = new mongoose.Schema({
+    orderId : {
+        type: String,
+        required: true,
+    },
     items: {
         type: Array,
         required: true,
     },
-    orderFor: {
+    orderedFrom: {
         type: String,
         required: true,
     },
-    orderBy: {
+    orderedBy: {
         type: String,
         required: true,
     },
     orderDate: {
-        type: Date,
+        type: String,
         required: true,
     },
     paidBy: {
@@ -29,8 +33,10 @@ const placeOrderSchema = new mongoose.Schema({
         type: Number,
         required: true,
     }
+},{
+    timestamps: true
 });
 
-const placeOrderModel = mongoose.model('Orders', placeOrderSchema);
+const placeOrderModel = mongoose.model('Order', placeOrderSchema);
 
 module.exports = placeOrderModel;
