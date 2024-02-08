@@ -7,10 +7,17 @@ const validator=require("validator")
    description :{type:String, required:[true, "Project Description is required"]},
    createDate:{type:String, required:[true, " date is required"] },
    creator:{type:String, required:[true," Creator name is requred"] },
-   team:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
-   clientEmail: { type: String, required: [false, " Email is required"], validate: validator.isEmail },
-   deal: { type: String, required: [false, "deal amount is requird"] },
-   clientId: { type: mongoose.Schema.Types.ObjectId, ref:"Client"}
+   deal: { type: String, required: [true, "deal amount is requird"] },
+   clientId: { type: mongoose.Schema.Types.ObjectId, ref:"Client"},
+   comment: [
+     {
+       type: String, created: { type: Date, default: Date.now() },
+       postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+     }
+   ],
+   question: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
+   bugs: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
+   team: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }]
 
  })
 

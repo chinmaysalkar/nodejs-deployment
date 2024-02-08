@@ -24,7 +24,7 @@ const createData = async (req, res) => {
 }
 const getAllData = async (req, res) => {
     try {
-    const project = await Project.find().populate({path:"team", select:["name","_id"]})
+        const project = await Project.find().populate({ path: "team", select: ["employeeName", "_id"] })
         res.status(200).json(project)
 
     } catch (error) {
@@ -69,12 +69,13 @@ const updateProject = async (req, res) => {
 
     }
 }
-const dropProject = async (req, res) => {
+const deleteProject = async (req, res) => {
     try {
         const deleteProject = await Project.findByIdAndDelete(req.params.projectId)
         if (!deleteProject) {
             return res.status(404).json({ error: "Project not found" });
         }
+        Client.projects.remove(req.params.projectId);
         res.status(200).json({ message: "project deleted succesfully", deleteProject })
 
     } catch (error) {
@@ -84,7 +85,7 @@ const dropProject = async (req, res) => {
 }
 
 module.exports = {
-    dropProject,
+    deleteProject,
     updateProject,
     searchProject,
     createData,

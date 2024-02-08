@@ -1,17 +1,13 @@
 
 const Client = require("../model/clientSchema");
-const ticketList = require("../model/ticketList");
 const toDoList = require("../model/todoList");
 
-
-
-
-    //client
+   //client
     const createClients= async(req,res)=>{
          try{
-             const client = new Client(req.body,)
-            const result = await client.save()
-            res.status(200).json({message:"new client created succesfully",result})
+             const newClient = new Client(req.body,)
+            const saveClient = await newClient.save()
+            res.status(200).json({message:"new client created succesfully",saveClient})
 
             }catch(error){
                 console.error(error)
@@ -20,10 +16,10 @@ const toDoList = require("../model/todoList");
     }
     const getClientData=async(req,res)=>{
         try{
-            const clients = await Client.find().populate({ path: 'projects', model: 'Project' })
+            const clients = await Client.find().populate({ path: 'projects', select:["pname","creator","team","deal"] })
             const clientsWithDetails = clients.map(client => {
                 const totalProjects = client.projects.length;
-                const totalDealAmount = client.projects.reduce((total, project) => total + (project.deal || 0), 0);
+                const totalDealAmount = client.projects.reduce((total, project) => total +Number(project.deal || 0), 0);
                 return {
                     _id: client._id,
                     clientName: client.clientName,
@@ -46,10 +42,7 @@ const toDoList = require("../model/todoList");
     const searchClients= async (req, res) => {
         try {
             const key = req.params.key;
-            const searchQuery = {};
-            if (key) {
-                searchQuery.clientName = new RegExp(key, 'i');
-            }
+            const searchQuery = key ? { clientName: new RegExp(key, 'i') } : {};
             const searchResults = await Client.find(searchQuery);
 
             res.status(200).json({ message: "search result is :", searchResults })
@@ -79,7 +72,7 @@ const toDoList = require("../model/todoList");
         }
 
     }
-    const dropClient= async (req, res) => {
+const deleteClient = async (req, res) => {
         try {
             const dropClient = await Client.findByIdAndDelete(req.params.clientId)
             if (!dropClient) {
@@ -93,77 +86,12 @@ const toDoList = require("../model/todoList");
         }
     }
 
-    //ticket 
-    const addNewTicket= async (req,res)=>{
-        try{
-            const maxTicketId = await ticketList.findOne({}, { _id: 1 }, { sort: { _id: -1 } }).exec();
-            const startingId = maxTicketId ? parseInt(maxTicketId._id.split('-')[1]) + 1 : 1;
-            const newTicketId = `ASD-${startingId.toString().padStart(4, '0')}`;
-
-            const newTicket = new ticketList({
-                ...req.body,
-                _id: newTicketId})
-            const result = await newTicket.save()
-            res.status(200).json({message: "ticket created succesfully", ticket: result})
-
-        } catch (error) {
-            console.error(error)
-            res.status(500).json("internal server error", error)
-        }
-
-    }
-    const searchTickets= async(req, res)=> {
-    try {
-        const key = req.params.key;
-        const searchQuery = {};
-        if (key) {
-            searchQuery.title = new RegExp(key, 'i');
-        }
-        const searchResults = await ticketList.find(searchQuery);
-
-        res.status(200).json({ message: "search result is :", searchResults })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: "internal server error", error })
-    }
-    }
-    const getAllTicketData =async (req, res) => {
-        try {
-            const ticketData = await ticketList.find()
-            res.status(200).json({ message: "ticket data is shown succesfully", ticketData })
-
-        } catch (error) {
-            console.error(error)
-            res.status(500).json("internal server error", error)
-        }
-    }
-
-    //todolist
-    const addTodoList =async (req,res)=>{
-        try{
-            const newlist= new toDoList(req.body)
-            const result =await newlist.save()
-            return res.status(200).json({message:"add task in todo list " , result})
-
-        }catch(error){
-            console.error(error)
-            return res.status(500).json({message: "internal server error", error})
-        }
-    }
-
-    
 
 module.exports={
-    getAllTicketData,
-    addTodoList,
-    searchTickets,
-    addNewTicket,
-    dropClient,
+    deleteClient,
     updateClient,
     searchClients,
     getClientData,
     createClients,
-
    
-
 }

@@ -15,7 +15,7 @@ const addNewTask = async (req, res) => {
 }
 const getAllTaskData = async (req, res) => {
     try {
-        const taskData = await Taskboard.find()
+        const taskData = await Taskboard.find().populate({ path: "team", select: ["employeeName", "_id"]})
         res.status(200).json({ message: "task board data shown succesfully", taskData })
 
     } catch (error) {
@@ -59,7 +59,7 @@ const searchTask = async (req, res) => {
         res.status(500).json({ message: "internal server error", error })
     }
 }
-const dropTask = async (req, res) => {
+const deleteTask = async (req, res) => {
     try {
         const deleteTask = await Taskboard.findByIdAndDelete(req.params.taskId)
         if (!deleteTask) {
@@ -75,9 +75,9 @@ const dropTask = async (req, res) => {
 }
 
 module.exports = {
-addNewTask,
+    addNewTask,
     getAllTaskData,
     updateTaskboard,
     searchTask,
-    dropTask,
+    deleteTask,
 }
