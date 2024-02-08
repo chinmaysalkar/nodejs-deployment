@@ -1,6 +1,10 @@
 const express=require("express")
 const router=express.Router();
 const usercontroller=require("../controller/usercontroller")
+const project=require("../controller/projectcontroller")
+const taskboard = require("../controller/taskcontroller")
+
+
 
 //client
 router.post("/clients", usercontroller.createClients)
@@ -9,18 +13,18 @@ router.get('/searchClient/:key', usercontroller.searchClients)
 router.put("/updateClient/:clientId", usercontroller.updateClient)
  router.delete("/dropClient/:clientId",usercontroller.dropClient )
 //project
-router.post("/pDetails/:clientId", usercontroller.createData)
-router.get('/pData', usercontroller.getAllData)
-router.get('/searchProject/:key', usercontroller.searchProject)
-router.put("/updateProject/:projectId", usercontroller.updateProject)
-router.delete("/dropProject/:projectId",usercontroller.dropProject)
+router.post("/pDetails/:clientId", project.createData)
+router.get('/pData', project.getAllData)
+router.get('/searchProject/:key', project.searchProject)
+router.put("/updateProject/:projectId", project.updateProject)
+router.delete("/dropProject/:projectId", project.dropProject)
 
 //taskboard
-router.post("/addTask", usercontroller.addNewTask)
-router.get('/taskData', usercontroller.getAllTaskData)
-router.get('/searchTrackboard/:key', usercontroller.searchTask)
-router.put("/updateTaskboard/:taskId", usercontroller.updateTaskboard)
-router.delete("/droptask/:taskId", usercontroller.dropTask)
+router.post("/addTask", taskboard.addNewTask)
+router.get('/taskData', taskboard.getAllTaskData)
+router.get('/searchTrackboard/:key', taskboard.searchTask)
+router.put("/updateTaskboard/:taskId", taskboard.updateTaskboard)
+router.delete("/droptask/:taskId", taskboard.dropTask)
 
 //ticket
 router.post("/addTicket", usercontroller.addNewTicket)
