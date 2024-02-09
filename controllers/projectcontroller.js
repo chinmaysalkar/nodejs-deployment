@@ -1,5 +1,5 @@
-const Project = require("../model/projectSchema");
-const Client = require("../model/clientSchema");
+const Project = require("../models/client/projectSchema");
+const Client = require("../models/client/clientSchema");
 
 //project
 const createData = async (req, res) => {

@@ -1,4 +1,4 @@
-const Taskboard = require("../model/taskboard")
+const Taskboard = require("../models/client/taskboard")
 
 //taskboard
 const addNewTask = async (req, res) => {
