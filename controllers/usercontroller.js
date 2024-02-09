@@ -1,6 +1,6 @@
 
-const Client = require("../model/clientSchema");
-const toDoList = require("../model/todoList");
+const Client = require("../models/clientSchema");
+const toDoList = require("../models/todoList");
 
    //client
     const createClients= async(req,res)=>{
@@ -72,7 +72,7 @@ const toDoList = require("../model/todoList");
         }
 
     }
-const deleteClient = async (req, res) => {
+    const deleteClient = async (req, res) => {
         try {
             const dropClient = await Client.findByIdAndDelete(req.params.clientId)
             if (!dropClient) {

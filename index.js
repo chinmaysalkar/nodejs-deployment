@@ -1,9 +1,9 @@
 const express =require ('express');
 const mongoose =require ('mongoose');
 const body_parser= require ('body-parser');
-const router=require("./routes/userRoute")
+const router=require("./routes/client/userRoute")
  require("dotenv").config()
-const errorMiddleware=require('./middleware/errormiddleware')
+const errorMiddleware=require('./middlewares/errormiddleware')
 
 const app=express();
 app.use(express.json());

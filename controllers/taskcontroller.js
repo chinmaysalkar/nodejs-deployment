@@ -1,11 +1,10 @@
-const Taskboard = require("../model/taskboard")
+const Taskboard = require("../models/taskboard")
 
 //taskboard
 const addNewTask = async (req, res) => {
     try {
         const task = new Taskboard(req.body)
         const result = await task.save()
-        console.log(result)
         res.status(200).json({ message: "new client created succesfully", result })
 
     } catch (error) {
@@ -29,12 +28,11 @@ const updateTaskboard = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: "task not found" })
         }
-        task.taskname = req.body.task || task.taskname
-        task.team = req.body.team || task.team
-        task.startDate = req.body.startDate || task.startDate
-        task.endDate = req.body.endDate || task.endDate
-        task.action = req.body.action || task.action
+        const updateFields = ['taskname', 'team', 'startDate', 'endDate', 'action'];
 
+        updateFields.forEach(field => {
+            task[field] = req.body[field] || task[field];
+        });
         result = await task.save()
         res.status(200).json({ message: "client is updated succesfully", Result: result })
 
@@ -49,8 +47,11 @@ const searchTask = async (req, res) => {
         const key = req.params.key;
         console.log("Search key:", key);
         const searchQuery = {};
+        const searchableField=["taskname"]
         if (key) {
-            searchQuery.taskname = new RegExp(key, 'i');
+            searchableField.forEach(field =>{
+            searchQuery[field] = new RegExp(key, 'i');
+            })
         }
         const searchResults = await Taskboard.find(searchQuery);
         res.status(200).json({ message: "search result is :", searchResult: searchResults })
@@ -74,10 +75,25 @@ const deleteTask = async (req, res) => {
     }
 }
 
+
+//grid view 
+const getPlanedTask = async(req,res)=>{
+ try{
+     const plannedTask = new Taskboard.find(req.body.action)
+    res.status(200).json({message :"planned task show succesfully", plannedTask})
+
+ }catch(error){
+    console.error(error)
+    res.status(500).json({messaage:"internal server error"})
+ }
+}
+
 module.exports = {
     addNewTask,
     getAllTaskData,
     updateTaskboard,
     searchTask,
     deleteTask,
+
+    getPlanedTask
 }

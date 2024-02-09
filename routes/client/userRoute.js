@@ -1,11 +1,11 @@
 const express=require("express")
 const router=express.Router();
-const usercontroller=require("../controller/usercontroller")
-const project=require("../controller/projectcontroller")
-const taskboard = require("../controller/taskcontroller")
-const employee=require("../controller/democontroller")
-const doList=require("../controller/todoController")
-const ticket=require("../controller/ticketController")
+const usercontroller=require("../../controllers/usercontroller")
+const project=require("../../controllers/projectcontroller")
+const taskboard = require("../../controllers/taskcontroller")
+const employee=require("../../controllers/democontroller")
+const doList=require("../../controllers/todoController")
+const ticket=require("../../controllers/ticketController")
 
 //employee
 router.post("/employee", employee.addEmployee)
@@ -28,6 +28,7 @@ router.delete("/dropProject/:projectId", project.deleteProject)
 //taskboard
 router.post("/addTask", taskboard.addNewTask)
 router.get('/taskData', taskboard.getAllTaskData)
+router.get('/taskData/:action', taskboard.getPlanedTask)
 router.get('/searchTrackboard/:key', taskboard.searchTask)
 router.put("/updateTaskboard/:taskId", taskboard.updateTaskboard)
 router.delete("/droptask/:taskId", taskboard.deleteTask)
