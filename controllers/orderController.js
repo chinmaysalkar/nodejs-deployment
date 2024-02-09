@@ -51,11 +51,11 @@ const placeOrder = async (req, res) => {
 
 const updateOrderStatus = async(req, res, next) => {
     try {
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ success: false, error: errors.array() });
         }
+        
         const {orderId} = req.body;
                 // Find the order by orderId and update its status from 'pending' to 'approved'
         const updatedOrder = await placeOrderModel.findOneAndUpdate(
@@ -68,10 +68,8 @@ const updateOrderStatus = async(req, res, next) => {
         if (!updatedOrder) {
             return res.status(404).json({ message: 'Order not found or status already approved' });
         }
-
         res.status(200).json({ message: 'Order status updated to approved', updatedOrder });
-
-        
+updateStatusValidation
     } catch (error) {
         return res.status(400).json({ 
             success: false ,error: error.message 

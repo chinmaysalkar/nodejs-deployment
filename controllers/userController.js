@@ -88,17 +88,17 @@ const updateUser = async (req, res) => {
             const verificationMsg = '<p>Hii '+data.name+', please click <a href="http://localhost:5500/auth/verify?id='+req.user.user._id+'">here</a> to verify your new email address</p>';
 
             // Save verification token and new email to the user document for later comparison
-            await User.findByIdAndUpdate({_id:req.user.user._id}, { 
+            const userData =await User.findByIdAndUpdate({_id:req.user.user._id}, { 
                 $set:{ newEmail: data.email, isVerified:false }
-            });
+            },{new:true } );
             sendMail(data.email, 'Verify New Email', verificationMsg);
         }
 
-        const userData =await User.findByIdAndUpdate({_id:req.user.user._id}, { 
-            $set:{  
-                 name: data.name,
-                 email: data.email
-                 }},{new:true } );
+        // const userData =await User.findByIdAndUpdate({_id:req.user.user._id}, { 
+        //     $set:{  
+        //          name: data.name,
+        //          email: data.email
+        //          }},{new:true } );
 
         return res.status(200).json({ 
             success: true,message: "Profile Updated successfully",data: userData

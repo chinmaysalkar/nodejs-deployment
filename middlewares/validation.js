@@ -46,10 +46,16 @@ const placeOrderValidation =[
 const updateOrderValidation =[
     check("orderId","OrderId is required").not().isEmpty(),
 ]
+const updateStatusValidation =[
+    check("userid","userid is required").not().isEmpty(),
+]
+
 const payrollValidation =[
+    check("userid","Please enter valid userid").not().isEmpty(),
     check("email","Enter the provider name").not().isEmpty(),
     check("salary","Payment platform required").not().isEmpty(),
 ]
+
 
 module.exports = {
     userValidation, 
@@ -60,5 +66,6 @@ module.exports = {
     profileValidation,
     placeOrderValidation,
     updateOrderValidation,
-    payrollValidation
+    payrollValidation,
+    updateStatusValidation
 };

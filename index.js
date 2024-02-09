@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const router = require('./routes/client/clientRoutes.js');
+const router = require('./routes/client/clientRoute.js');
 const route = require('./routes/user/userRoutes.js');
 const authRoute = require('./routes/user/authRoute.js');
 const mongoose = require('./db.js');

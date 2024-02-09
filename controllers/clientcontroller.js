@@ -1,6 +1,6 @@
 
-const Client = require("../model/clientSchema");
-const toDoList = require("../model/todoList");
+const Client = require("../models/client/clientSchema");
+const toDoList = require("../models/client/todoList");
 
    //client
     const createClients= async(req,res)=>{
