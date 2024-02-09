@@ -1,5 +1,10 @@
 const jwt = require('jsonwebtoken');
-const Blacklist = require('../models/blacklist.js');
+const Blacklist = require('../models/user/blacklistSchema.js');
+
+const generateAccessToken = (user) => {
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{ expiresIn:'2h'} )
+    return token;
+}
 
 const verifyToken= async (req, res, next)=>{
 
@@ -33,6 +38,8 @@ const verifyToken= async (req, res, next)=>{
     return next();
 }
 
+
+
 module.exports = {
-    verifyToken
+    verifyToken, generateAccessToken
 }

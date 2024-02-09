@@ -14,7 +14,7 @@ const userValidation = [
 ];
 
 const mailVerificationValidation = [
-    check("email","Please enter valid email").isEmail(),
+    check("email","Please enter valid email").isEmpty(),
 ];
 
 const loginValidation =[
@@ -29,11 +29,36 @@ const otpValidation =[
     check("user_id","User id is required").not().isEmpty(),
     check("otp","Please enter valid otp").not().isEmpty()
 ]
+const profileValidation =[
+    check("userid","Please enter valid userid").not().isEmpty(),
+    check("position","Role is required").not().isEmpty(),
+    check("role","Role is required").not().isEmpty()
+]
+const placeOrderValidation =[
+    check("items","Please enter items name").not().isEmpty(),
+    check("orderedFrom","Enter the provider name").not().isEmpty(),
+    check("orderedBy","Name is required").not().isEmpty(),
+    check("orderDate","Date is required").not().isEmpty(),
+    check("paidBy","Payment platform required").not().isEmpty(),
+    check("status","Status is required").not().isEmpty(),
+    check("amount","Please specify the amount").not().isEmpty().isNumeric()
+]
+const updateOrderValidation =[
+    check("orderId","OrderId is required").not().isEmpty(),
+]
+const payrollValidation =[
+    check("email","Enter the provider name").not().isEmpty(),
+    check("salary","Payment platform required").not().isEmpty(),
+]
 
 module.exports = {
     userValidation, 
     mailVerificationValidation, 
     loginValidation, 
     updateProfileValidation,
-    otpValidation 
+    otpValidation,
+    profileValidation,
+    placeOrderValidation,
+    updateOrderValidation,
+    payrollValidation
 };
