@@ -7,7 +7,7 @@ const ticketListSchema = new mongoose.Schema({
    department:{type:String, required:[true,'department is required']},
    agentName:{type:String, required:[true,'agent name is required']},
    date:{type:Date, required:[true, " date is required"]} ,
-   activity:{type:mongoose.Schema.Types.ObjectId, reff:""}
+   activity:{type:mongoose.Schema.Types.ObjectId, ref:""}
 })
 
 const ticketList = mongoose.model("ticketList", ticketListSchema)

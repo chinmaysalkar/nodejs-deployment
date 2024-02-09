@@ -1,4 +1,4 @@
-const toDoList = require("../models/todoList");
+const toDoList = require("../models/client/todoList");
 
 //todolist
 const addTodoList = async (req, res) => {

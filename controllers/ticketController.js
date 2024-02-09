@@ -1,4 +1,4 @@
-const ticketList = require("../models/ticketList");
+const ticketList = require("../models/client/ticketList");
 
 //ticket 
 const addNewTicket = async (req, res) => {

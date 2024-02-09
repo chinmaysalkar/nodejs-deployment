@@ -1,22 +1,32 @@
-const express =require ('express');
-const mongoose =require ('mongoose');
-const body_parser= require ('body-parser');
-const router=require("./routes/client/userRoute")
- require("dotenv").config()
-const errorMiddleware=require('./middlewares/errormiddleware')
+require('dotenv').config();
+const errorMiddleware=require('./middlewares/errormiddleware.js')
+const express = require('express');
+const app = express();
 
-const app=express();
-app.use(express.json());
-app.use(express.urlencoded({extended:false}))
+app.set('view engine', 'ejs');
+app.set('views', './views');
 
-mongoose.connect("mongodb+srv://sandeep:Sandeep1234@cluster93986.k9o9qaz.mongodb.net/")
-.then(()=>console.log("database is connected succesfully "))
-.catch((error)=>console.error ("didnot connet to the database",error))
+const port = process.env.SERVER_PORT || 5500;
 
-app.use (body_parser.urlencoded({extended: false}))
-app.use (body_parser.json());
-app.use("/client",router)
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const router = require('./routes/client/clientRoute.js');
+
+const mongoose = require('./db.js');
+
+
 app.use(errorMiddleware)
 
-const PORT = process.env.PORT||5500 ;
-app.listen(PORT, ()=>console.log ("server connected succesfully "))
+app.use('/client',router);
+
+
+app.get('/', (req, res) => {
+  res.send('index');
+});
+
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

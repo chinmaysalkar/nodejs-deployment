@@ -1,4 +1,4 @@
-const Taskboard = require("../models/taskboard")
+const Taskboard = require("../models/client/taskboard")
 
 //taskboard
 const addNewTask = async (req, res) => {
@@ -14,7 +14,9 @@ const addNewTask = async (req, res) => {
 }
 const getAllTaskData = async (req, res) => {
     try {
-        const taskData = await Taskboard.find().populate({ path: "team", select: ["employeeName", "_id"]})
+        const taskData = await Taskboard.find()
+        .populate({ path: "team", select: ["employeeName", "_id"]})
+            .populate({ path: "project", select: ["pname"]} )
         res.status(200).json({ message: "task board data shown succesfully", taskData })
 
     } catch (error) {
@@ -79,8 +81,15 @@ const deleteTask = async (req, res) => {
 //grid view 
 const getPlanedTask = async(req,res)=>{
  try{
-     const plannedTask = new Taskboard.find(req.body.action)
-    res.status(200).json({message :"planned task show succesfully", plannedTask})
+     const action = req.params.action;
+     const totalTask =await Taskboard.find()
+     const task = await Taskboard.find({ action });
+     if (!action ){
+        res.status(404).json ({message:"searched action not found "})
+     }
+     const progress= (task.length*100)/totalTask.length
+     
+     res.status(200).json({messaage:`the ${progress} % task is ${action} `});
 
  }catch(error){
     console.error(error)
