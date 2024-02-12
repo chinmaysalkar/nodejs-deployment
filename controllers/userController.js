@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 const {validationResult} = require('express-validator');
 const Profile = require('../models/user/profileSchema.js');
 //model imported

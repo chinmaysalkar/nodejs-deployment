@@ -14,7 +14,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    isVerified: {
+    designation: {
+        type: String,
+        default: "HR"
+    },
+    isMailVerified: {
         type: Boolean,
         default: false
     }

@@ -21,18 +21,39 @@ const loginValidation =[
     check("email","Please enter valid email").not().isEmpty().isEmail(),
     check("password","Password is required").not().isEmpty(),
 ]
-const updateProfileValidation =[
-    check("name","Name is required").not().isEmpty(),
-    check("email","Please enter valid email").optional().isEmail()
-]
+
 const otpValidation =[
     check("user_id","User id is required").not().isEmpty(),
     check("otp","Please enter valid otp").not().isEmpty()
 ]
 const profileValidation =[
-    check("userid","Please enter valid userid").not().isEmpty(),
-    check("position","Role is required").not().isEmpty(),
-    check("role","Role is required").not().isEmpty()
+    check("email","Please enter valid email").not().isEmpty(),
+    check("fullName","Name is required").not().isEmpty(),
+    check("mobile","Please enter valid mobile number").not().isEmpty(),
+    check("department","Department is required").not().isEmpty(),
+    check("designation","Role is required").not().isEmpty(),
+    check("role","Role is required").not().isEmpty(),
+    check("password","Password must be at least 6 characters consists of at least 1 lowercase, 1 uppercase, 1 number and 1 symbol ").isStrongPassword({
+        minLength: 6,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+        maxLength: 14
+    })
+]
+
+const updateProfileValidation =[
+    check("email","Please enter valid email").optional().not().isEmpty().isEmail(),
+    check("mobile","Please enter valid mobile number").optional().not().isEmpty().isLength(10) ,
+    check("password","Password must be at least 6 characters consists of at least 1 lowercase, 1 uppercase, 1 number and 1 symbol ").optional().isStrongPassword({
+        minLength: 6,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+        maxLength: 14
+    })
 ]
 const placeOrderValidation =[
     check("items","Please enter items name").not().isEmpty(),
@@ -61,9 +82,9 @@ module.exports = {
     userValidation, 
     mailVerificationValidation, 
     loginValidation, 
-    updateProfileValidation,
     otpValidation,
     profileValidation,
+    updateProfileValidation,
     placeOrderValidation,
     updateOrderValidation,
     payrollValidation,

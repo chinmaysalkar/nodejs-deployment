@@ -1,8 +1,8 @@
 const payrollModel = require('../models/user/payrollSchema');
 const profileModel = require('../models/user/profileSchema');
-const {validationResult} = require('express-validator');
+const { validationResult } = require('express-validator');
 
-
+  
 const payroll = async(req, res) =>{
     try {
         const errors = validationResult(req);
@@ -22,7 +22,6 @@ const payroll = async(req, res) =>{
             return res.status(404).json({ success: false, error: 'Profile not found' });
         }
 
-        
         const newPayroll = new payrollModel({
             userid: profile.userid,
             name: profile.name,
@@ -52,8 +51,6 @@ const updatePayrollStatus = async(req, res, next) => {
         
         const { userid } = req.body;
 
-        
-        
                 // Find the order by orderId and update its status from 'pending' to 'approved'
         const updatedStatus = await payrollModel.findOneAndUpdate(
             { userid:userid, status: 'pending' }, 
@@ -78,7 +75,6 @@ const payRollreset = async(req, res) => {
     
         try {
             
-    
             // Get the current date
             const currentDate = new Date();
     

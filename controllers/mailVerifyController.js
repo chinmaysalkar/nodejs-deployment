@@ -14,10 +14,10 @@ const mailVerification = async (req, res) => {
 
         if (!user) {
             return res.status(404).render('verification',{message: "User not found" });
-        } else if (user.isVerified) {
+        } else if (user.isMailVerified) {
             return res.status(200).render('verification',{message: "Already Verified" });
         } else {
-            user.isVerified = true;
+            user.isMailVerified = true;
             await user.save();
             return res.status(200).render('verification',{message: "Mail Verified successfully"});
         }
