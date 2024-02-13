@@ -34,7 +34,9 @@ const updateTaskboard = async (req, res) => {
         task.startDate = req.body.startDate || task.startDate
         task.endDate = req.body.endDate || task.endDate
         task.action = req.body.action || task.action
-
+        ['taskname', 'team', 'startDate', 'endDate', 'action'].forEach(field => {
+            task[field] = req.body[field] || task[field];
+        });
         result = await task.save()
         res.status(200).json({ message: "client is updated succesfully", Result: result })
 
