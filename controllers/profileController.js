@@ -1,11 +1,10 @@
 const bcrypt = require('bcrypt');
-const profile = require("../models/user/profileSchema");
-const { validationResult } = require("express-validator");
 const User = require("../models/user/usermodel");
+const { validationResult } = require("express-validator");
 const { getNextUserId, mergeAndFormatName } = require("../middlewares/helpers");
 const {sendMail} = require("../middlewares/mailer");
 
-const createProfile = async (req, res) => {
+const createUser = async (req, res) => {
     
     try {
 
@@ -20,7 +19,7 @@ const createProfile = async (req, res) => {
         const { email, fullName, mobile, department, designation, role , password } = req.body;
         
 
-        const existingUser = await profile.findOne({ email:email});
+        const existingUser = await User.findOne({ email:email});
         if (existingUser) {
             return res.status(400).json({ success: false, error: 'User with this Email already exist in the profile' });
         }
@@ -29,11 +28,9 @@ const createProfile = async (req, res) => {
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-
-        
-        
+   
         // Update profile's role
-        const updatedProfile = new profile({
+        const updatedProfile = new User({
             userId: nextId,
             email: email,
             fullName: fullName,
@@ -58,29 +55,23 @@ const createProfile = async (req, res) => {
             data:updatedProfile});
 
     } catch (error) {
-        
-        res.status(400).json({ success: false, error: error.message });
+        res.status(400).json({ 
+            success: false, 
+            error: error.message });
     }
 };
 
-const updateProfile = async (req, res) => {
+const updateUser = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const profileData = await profile.findOne({ _id:req.body.id });
+        const profileData = await User.findOne({ _id:req.body.id });
         if (!profileData) {
             return res.status(404).json({ success: false, error: 'Profile not found' });
         }
-
-        // const existingUser = await User.findOne({ email: req.body.email });
-        // if (existingUser) {
-        //     return res.status(400).json({ success: false, error: 'User with this Email already exists' });
-        // }
-
-
 
         // Check which fields are present in the request body and update accordingly
         if (req.body.email) {
@@ -88,7 +79,7 @@ const updateProfile = async (req, res) => {
             
             const msg = '<p>Hii '+fullName+', your account has been created successfully. Please <a href="http://localhost:5500/auth/verify?id='+savedUser._id+'">verify</a> your mail </p>';
 
-            const userData =await User.findByIdAndUpdate({_id:req.body.id}, { 
+            const userData =await profile.findByIdAndUpdate({_id:req.body.id}, { 
                 $set:{ newEmail: data.email, isVerified:false }
             },{new:true } );
             sendMail(data.email, 'Verify New Email', msg);
@@ -111,17 +102,12 @@ const updateProfile = async (req, res) => {
         if (req.body.designation) {
             profileData.designation = req.body.designation;
         }
-        if (req.body.position) {
-            profileData.position = req.body.position;
-        }
         if (req.body.role) {
             profileData.role = req.body.role;
         }
         if (req.body.password) {
             profileData.password = req.body.password;
         }
-
-        
 
         await profileData.save();
         res.status(200).json({ success: true, message: 'Profile updated successfully', data: profileData });
@@ -130,7 +116,69 @@ const updateProfile = async (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 }
+const viewUser = async (req, res) => {
+    try {
+        const userData = await User.find({});
+        return res.status(400)
+        .json({ success:true,
+             message: "User Profile Data!",
+             data:userData});
+
+    } catch (error) {
+        return res.status(400)
+        .json({ success: false,
+             error: error.message });
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, error: errors.array() });
+        }
+        
+        const deletedUser = await User.findByIdAndDelete({_id:req.body.id});
+
+        if (!deletedUser) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        if (!deletedUser) {
+            return res.status(404).json({ success: false, error: 'User already deleted' });
+        }
+        
+        res.status(200).json({ success: true, message: "User and his/her profile deleted successfully" });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+const updateVerificationStatus = async (req, res) => {
+    try {
+        const {id} = req.body;
+        const user = await User.findOne({_id: id});
+        
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        if(user.isVerified == false){
+            user.isVerified = true;
+        }
+        else{
+            user.isVerified = false;
+        }
+        
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'User verification status updated' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
 
 
 
-module.exports = { createProfile, updateProfile };
+
+module.exports = { createUser, updateUser ,viewUser, deleteUser,updateVerificationStatus };

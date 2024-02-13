@@ -1,5 +1,5 @@
 const payrollModel = require('../models/user/payrollSchema');
-const profileModel = require('../models/user/profileSchema');
+const profileModel = require('../models/user/usermodel');
 const { validationResult } = require('express-validator');
 
   
