@@ -12,15 +12,16 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const router = require('./routes/client/clientRoute.js');
-
+const router = require("../nodejs-deployment-1/routes/client/clientRoute.js");
+const route = require('../nodejs-deployment-1/routes/user/userRoutes.js');
+const authRoute = require('../nodejs-deployment-1/routes/user/authRoute.js');
 const mongoose = require('./db.js');
 
 
 app.use(errorMiddleware)
-
+app.use('/api', route)
 app.use('/client',router);
-
+app.use('/auth',authRoute);
 
 app.get('/', (req, res) => {
   res.send('index');

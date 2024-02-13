@@ -15,7 +15,7 @@ const createData = async (req, res) => {
         const result = await project.save();
         client.projects.push(result._id);
 
-         await client.save();
+        await client.save();
         res.status(201).json({ message: "new project creataed succesfully", result })
     } catch (error) {
         console.error(error)
@@ -54,8 +54,7 @@ const updateProject = async (req, res) => {
             return res.status(404).json({ error: "Project not found" });
         }
 
-        const updateField=['pname', 'description', 'tools', 'createDate', 'creator', 'clientEmail', 'team', 'deal']
-        updateField.forEach(field => {
+        ['pname', 'description', 'tools', 'createDate', 'creator', 'clientEmail', 'team', 'deal'].forEach(field => {
             project[field] = req.body[field] || project[field];
         });
 
@@ -76,10 +75,7 @@ const deleteProject = async (req, res) => {
         if (!deleteProject) {
             return res.status(404).json({ error: "Project not found" });
         }
-        await Client.updateOne(
-            { projects: req.params.projectId },
-            { $pull: { projects: req.params.projectId } }
-        );
+        Client.projects.remove(req.params.projectId);
         res.status(200).json({ message: "project deleted succesfully", deleteProject })
 
     } catch (error) {

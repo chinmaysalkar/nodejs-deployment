@@ -72,7 +72,7 @@ const toDoList = require("../models/client/todoList");
         }
 
     }
-    const deleteClient = async (req, res) => {
+const deleteClient = async (req, res) => {
         try {
             const dropClient = await Client.findByIdAndDelete(req.params.clientId)
             if (!dropClient) {

@@ -22,6 +22,7 @@ const getTodoList= async (req,res)=>{
 
     }
 }
+
 const deleteTodoList =async (req,res)=>{
     try{
         const deleteTodo=await toDoList.findByIdAndDelete(req.params.doListId)
@@ -42,5 +43,7 @@ module.exports={
     addTodoList,
     getTodoList,
     deleteTodoList,
+
+    
 }
 
