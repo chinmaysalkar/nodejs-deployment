@@ -39,7 +39,14 @@ const getAllTicketData = async (req, res) => {
         res.status(500).json({ message: "internal server error", error })
     }
 }
+// const updateTicket= async (req,res)=>{
+//     try{
 
+//     }catch(error){
+//         console.error(error)
+//         res.status(500).json({ message: "internal server error", error })
+//     }
+// }
 
 const addTicketcomment = async (req, res) => {
     try {
