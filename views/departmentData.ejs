@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Department Data</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Department Name</th>
+                <th>Number of Employees</th>
+                <th>HOD Name</th>
+                <th>Employees Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% departments.forEach(department => { %>
+                <tr>
+                    <td><%= department._id %></td>
+                    <td><%= department.numberOfEmployees %></td>
+                    <td><%= department.hod.join(', ') %></td>
+                    <td><%= department.employees.join(', ') %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

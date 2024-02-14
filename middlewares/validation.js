@@ -18,7 +18,7 @@ const otpValidation =[
 const profileValidation =[
     check("email","Please enter valid email").not().isEmpty(),
     check("fullName","Name is required").not().isEmpty(),
-    check("mobile","Please enter valid mobile number").not().isEmpty(),
+    check("mobile","Please enter valid mobile number").not().isEmpty().isLength(10),
     check("department","Department is required").not().isEmpty(),
     check("designation","Role is required").not().isEmpty(),
     check("role","Role is required").not().isEmpty(),
@@ -29,7 +29,8 @@ const profileValidation =[
         minNumbers: 1,
         minSymbols: 1,
         maxLength: 14
-    })
+    }),
+    //check("profilePhoto","Profile picture is required").not().isEmpty()
 ]
 
 const updateProfileValidation =[
@@ -66,6 +67,12 @@ const payrollValidation =[
     check("salary","Payment platform required").not().isEmpty(),
 ]
 
+const holidayValidation =[
+    check("holidayName","Holiday name is required").not().isEmpty(),
+    check("date","Holiday date is required").not().isEmpty(),
+    check("description","Description about holiday required").not().isEmpty(),
+]
+
 
 module.exports = {
      
@@ -77,5 +84,6 @@ module.exports = {
     placeOrderValidation,
     updateOrderValidation,
     payrollValidation,
-    updateStatusValidation
+    updateStatusValidation,
+    holidayValidation
 };

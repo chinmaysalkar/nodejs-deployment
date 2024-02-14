@@ -25,11 +25,11 @@ const profileSchema = new mongoose.Schema({
         required: true
     },
     designation: {
-        type: String,
+        type: Array,
         required: true
     },
     role: {
-        type: String,
+        type: Array,
         required: true
     },
     username: {
@@ -47,7 +47,11 @@ const profileSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
-    }
+    },
+    // profilePhoto: {
+    //     type: File,
+    //     required: true
+    // }
     
     
 });

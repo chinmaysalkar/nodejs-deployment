@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const Blacklist = require('../models/user/blacklistSchema.js');
 const AccessTokenModel = require('../models/user/accessTokenSchema.js');
 const jwt = require('jsonwebtoken');
+const { deleteOldAccessToken } = require('../middlewares/blacklist.js');
 
 const loginUser = async (req, res) => {
     try {
@@ -46,21 +47,13 @@ const loginUser = async (req, res) => {
         }
         
         
-            // Find the old access token in the AccessTokenModel using the user's id
-            const oldAccessTokenData = await AccessTokenModel.findOne({ id: userData._id });
-
-            // If the old access token exists and is not expired, add it to blacklist
-            if (oldAccessTokenData && oldAccessTokenData.expiresAt > Date.now()) {
-                const newBlacklist = new Blacklist({token: oldAccessTokenData.token});
-                await newBlacklist.save();
-            }
+        deleteOldAccessToken(userData._id);
         
         const accessToken = generateAccessToken({ user: userData });
 
-        const saltRounds = 10;
-        const hashedToken = await bcrypt.hash(accessToken, saltRounds);
-
-   
+        // to hash the access token
+        // const saltRounds = 10;
+        // const hashedToken = await bcrypt.hash(accessToken, saltRounds);
 
         const accessTokenData = await AccessTokenModel.findOne({ id: userData._id });
 
@@ -72,7 +65,7 @@ const loginUser = async (req, res) => {
             // Create a new access token data
             const newAccessTokenData = new AccessTokenModel({
                 id: userData._id,
-                token: hashedToken
+                token: accessToken
             });
             await newAccessTokenData.save();
         }
@@ -98,8 +91,13 @@ const logout = async(req, res) => {
         const bearer = token.split(' ');
         const bearerToken = bearer[1];
 
+
+
+        deleteOldAccessToken(userId);
         const newBlacklist = new Blacklist({token: bearerToken});
         await newBlacklist.save();
+
+        
 
         // res.setHeader('Clear-Site-Data', '"cookies","storage"');
 

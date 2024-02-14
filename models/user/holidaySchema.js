@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const holidaySchema = new mongoose.Schema({
-    name: {
+    holidayName: {
         type: String,
         required: [true, "holiday name is required"]
     },
     date: {
-        type: Date,
+        type: String,
         required: [true, "holiday date is required"]
     },
     description: {

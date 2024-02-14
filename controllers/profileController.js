@@ -3,6 +3,9 @@ const User = require("../models/user/usermodel");
 const { validationResult } = require("express-validator");
 const { getNextUserId, mergeAndFormatName } = require("../middlewares/helpers");
 const {sendMail} = require("../middlewares/mailer");
+const AccessTokenModel = require("../models/user/accessTokenSchema");
+const Blacklist = require("../models/user/blacklistSchema");
+const { deleteOldAccessToken } = require('../middlewares/blacklist');
 
 const createUser = async (req, res) => {
     
@@ -119,7 +122,7 @@ const updateUser = async (req, res) => {
 const viewUser = async (req, res) => {
     try {
         const userData = await User.find({});
-        return res.status(400)
+        return res.status(200)
         .json({ success:true,
              message: "User Profile Data!",
              data:userData});
@@ -133,23 +136,34 @@ const viewUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, error: errors.array() });
+      }
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ success: false, error: errors.array() });
-        }
-        
-        const deletedUser = await User.findByIdAndDelete({_id:req.body.id});
+      //const deletedUser = await User.findByIdAndDelete({ _id: req.body.id });
 
-        if (!deletedUser) {
-            return res.status(404).json({ success: false, error: 'User not found' });
-        }
+      const deletedUser = await User.findById({ _id: req.body.id });
 
-        if (!deletedUser) {
-            return res.status(404).json({ success: false, error: 'User already deleted' });
-        }
-        
-        res.status(200).json({ success: true, message: "User and his/her profile deleted successfully" });
+      if (!deletedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: "User not found" });
+      }
+
+      if (!deletedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: "User already deleted" });
+      }
+      deleteOldAccessToken(deletedUser._id);
+
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "User and his/her profile deleted successfully",
+        });
     } catch (error) {
         res.status(400).json({ success: false, error: error.message });
     }
