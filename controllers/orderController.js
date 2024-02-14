@@ -1,5 +1,5 @@
 const placeOrderModel = require("../models/user/placeOrderSchema");
-const Profile = require("../models/user/profileSchema");
+const User = require("../models/user/usermodel.js");
 
 const { validationResult } = require("express-validator");
 const {generateOrderId} = require('../middlewares/helpers.js');
@@ -17,11 +17,13 @@ const placeOrder = async (req, res) => {
       req.body;
 
     // Check if the orderedBy is a Super Admin
-    const profile = await Profile.findOne({ name: orderedBy });
-    if (!profile || (profile.position !== "Admin" && profile.position !== "Super Admin")){
+    const profile = await User.findOne({ fullName: orderedBy });
+    //if (!profile || (profile.position !== "Admin" && profile.position !== "Super Admin")){
+    if (!profile || (profile.designation !== "Admin" && profile.designation !== "HR")){
+
       return res
         .status(400)
-        .json({ message: "Ordered by user must be a Super Admin or Admin" });
+        .json({ message: "Ordered by user must be a Admin or HR" });
     }
 
     // Create a new order
@@ -51,10 +53,9 @@ const placeOrder = async (req, res) => {
 
 const updateOrderStatus = async(req, res, next) => {
     try {
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            return res.status(400).json({ success: false, error: errors.array() });
         }
         const {orderId} = req.body;
                 // Find the order by orderId and update its status from 'pending' to 'approved'
@@ -68,10 +69,8 @@ const updateOrderStatus = async(req, res, next) => {
         if (!updatedOrder) {
             return res.status(404).json({ message: 'Order not found or status already approved' });
         }
-
         res.status(200).json({ message: 'Order status updated to approved', updatedOrder });
-
-        
+updateStatusValidation
     } catch (error) {
         return res.status(400).json({ 
             success: false ,error: error.message 
@@ -88,6 +87,29 @@ const viewOrders = async(req, res, next) => {
     }
 }
 
+const CancelOrder = async (req, res) => {
+  try {
+    // Get the order id from the request body
+    const { orderId } = req.body;
+    
+    // Find the order by id and delete it
+    const deletedOrder = await placeOrderModel.findOneAndDelete({orderId:orderId});
+    
+    // If no order was found with the given id, send an error response
+    if (!deletedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    
+    // If the order was successfully deleted, send a success response
+    res.status(200).json({ message: 'Order deleted successfully', data: deletedOrder });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+};
+
+
 
 
 
@@ -95,5 +117,6 @@ const viewOrders = async(req, res, next) => {
 module.exports = {
   placeOrder,
   updateOrderStatus,
-  viewOrders
+  viewOrders,
+  CancelOrder
 };
