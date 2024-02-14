@@ -4,7 +4,7 @@ const { deleteClient,updateClient,searchClients,getClientData,createClients, }=r
 const { deleteProject,updateProject,searchProject,createData,getAllData, }=require("../../controllers/projectcontroller")
 const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
 const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
-const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment, updateTicketReplay }=require("../../controllers/ticketController");
+const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment }=require("../../controllers/ticketController");
 const { verifyToken } = require("../../middlewares/token");
 // const { verifyToken } = require("../../middlewares/token");
 
@@ -21,7 +21,7 @@ router.delete("/deleteClient/:clientId",deleteClient)
 router.post("/pDetails/:clientId", createData)
 router.get('/pData', getAllData)
 router.get('/searchProject/:key', searchProject)
-router.put("/updateProject/:projectId", updateTicket)
+router.put("/updateProject/:projectId", updateProject)
 router.delete("/deleteProject/:projectId", deleteProject)
 
 //taskboard
@@ -37,7 +37,6 @@ router.post("/addTicket/:userId" ,addNewTicket)
 router.get('/ticketData', getAllTicketData)
 router.get('/searchTicket/:key', searchTickets)
 router.put("/Updateticket/:Id", updateTicket)
-router.put("/ticketReply/:Id",updateTicketReplay)
 router.delete("/deleteticket/:ticketId", deleteTicket)
 
 //todo
@@ -48,6 +47,8 @@ router.delete("/deleteTask/:taskId", deleteTodoList)
 //comment
 router.post("/comment/:ticketId", addTicketcomment)
 router.get("/getAllComments", getAllComment)
+router.put("/UpdateComment/:commentId",updateComment)
+router.delete("/deleteComment/:commentId",deleteComment)
 
 
 module.exports= router;

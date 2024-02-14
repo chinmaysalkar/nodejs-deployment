@@ -49,14 +49,14 @@ const getAllTicketData = async (req, res) => {
 const updateTicket= async (req,res)=>{
     try{
         const ticket = await ticketList.findById(req.params.Id)
-        console.log(req.params.Id)
           if (!ticket){
            return res.status(404).json({message:"ticket not found"})
           }
           ["title","department","comment","employeeId","priority"].forEach(field=>{
               ticket[field] = req.body[field] || ticket[field];
           })
-        result = await ticket.save()
+        
+          result = await ticket.save()
         res.status(200).json({ message: "Ticket update is updated succesfully", Result: result })
 
        
@@ -65,7 +65,6 @@ const updateTicket= async (req,res)=>{
         res.status(500).json({ message: "internal server error", error })
     }
 }
-
 const deleteTicket = async (req, res) => {
     try {
         const deleteticket = await ticketList.findByIdAndDelete(req.params.ticketId)
@@ -81,47 +80,21 @@ const deleteTicket = async (req, res) => {
 }
 
 
-
-const updateTicketReplay = async (req, res) => {
-    try {
-        const comment= req.body.comment
-        const ticket = await ticketList.findOneAndUpdate({_id:req.params.Id},
-            { $push: { comments: comment } }, 
-            { new: true})
-        console.log(req.params.Id)
-        if (!ticket) {
-            return res.status(404).json({ message: "ticket not found" })
-        }
-       
-        const addReply = await ticket.save()
-        // result = await addReply.save()
-        
-        res.status(200).json({ message: "Ticket update is updated succesfully", Result: addReply })
-
-
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: "internal server error", error })
-    }
-}
-
-
 //Comments
 
 const addTicketcomment = async (req, res) => {
     try {
         const commentReply = new ticketComment(req.body);
         console.log(req.params.ticketId)
-        const ticket = await ticketList.findById(req.params.ticketId)
+        const ticket = await ticketList.findById(req.params.ticketId )
         if (!ticket) {
             console.error("Ticket not found for comment creation. ticket ID:", req.params.ticketId);
             return res.status(404).json({ message: "ticket not found " })
         }
+       
         const result = await commentReply.save();
-        console.log(result.result_id)
-        ticket.commentReply.push(result._id);
-        await ticket.save();
-
+        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id } });
+        
         res.status(201).json({ message: "new project creataed succesfully", result })
         
     } catch (error) {
@@ -136,18 +109,54 @@ const getAllComment = async (req,res)=>{
 
     } catch (error) {
         console.error(error)
-        res.status(500).json({ messaage: "internal server error" })
+        res.status(500).json({ messaage: "internal server error" , error})
     }
+}
+const deleteComment = async (req, res) => {
+    try {
+        const delComment = await ticketComment.findById(req.params.commentId)
+        if (!delComment) {
+            res.status(404).json({ message: "commentId is not found for deleting the comment" })
+        }
+        res.status(200).json({ message: "comment deleted succesfully ", delComment })
+        await ticketList.comment.findById(req.parmas.commentId, { $remove: { comment: commentId } })
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ messaage: "internal server error", error })
+
+    }
+}
+const updateComment=async (req,res)=>{
+    try {
+        const comment=await ticketComment.findById(req.parmas.commentId)
+        if (!comment){
+            res.status(404).json({message:"comment Id not found"})
+        }
+        comment.message = req.body.message || comment.message
+        result= await comment.save()
+        req.status(200).json({message:"comment updated succesfully"})
+
+    }catch(error){
+        console.error(error)
+        res.status(500).json({ messaage: "internal server error" ,error})
+
+    }
+
+   
+
 }
 
 module.exports={
     getAllTicketData,
     searchTickets,
     addNewTicket,
-    addTicketcomment,
     deleteTicket,
     updateTicket,
-   getAllComment,
 
-    updateTicketReplay,
+    
+    addTicketcomment,
+    getAllComment,
+    updateComment,
+    deleteComment
 }
