@@ -6,7 +6,7 @@ const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskP
 const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
 const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment }=require("../../controllers/ticketController");
 const { verifyToken } = require("../../middlewares/token");
-// const { verifyToken } = require("../../middlewares/token");
+
 
 
 
@@ -14,7 +14,7 @@ const { verifyToken } = require("../../middlewares/token");
 router.post("/clients", verifyToken, createClients)
 router.get('/clientData',getClientData)
 router.get('/searchClient/:key', searchClients)
-router.put("/updateClient/:clientId", updateClient)
+router.put("/updateClient/:Id", updateClient)
 router.delete("/deleteClient/:clientId",deleteClient)
 
 //project
@@ -45,9 +45,9 @@ router.get("/getTodoList", getTodoList)
 router.delete("/deleteTask/:taskId", deleteTodoList)
 
 //comment
-router.post("/comment/:ticketId", addTicketcomment)
+router.post("/comment/:ticketId", verifyToken, addTicketcomment)
 router.get("/getAllComments", getAllComment)
-router.put("/UpdateComment/:commentId",updateComment)
+router.put("/UpdateComment/:Id",updateComment)
 router.delete("/deleteComment/:commentId",deleteComment)
 
 

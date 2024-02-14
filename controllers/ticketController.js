@@ -7,11 +7,11 @@ const addNewTicket = async (req, res) => {
     try {
     
         const newTicket = new ticketList(req.body)
-      
-        const user = await User.findById(req.params.userId)
+       const user = await User.findById(req.params.userId)
         if(!user){
              return res.status(404).json({message:"Employee not found"})
         }
+        newTicket.employee=user.fullName
         const result = await newTicket.save()
         res.status(200).json({ message: "ticket created succesfully", ticket: result })
 
@@ -84,18 +84,20 @@ const deleteTicket = async (req, res) => {
 
 const addTicketcomment = async (req, res) => {
     try {
-        const commentReply = new ticketComment(req.body);
-        console.log(req.params.ticketId)
+      
+        // const { message}=req.body
+        const senderName = req.user
+        console.log(req.user._id)
+        const commentReply = new ticketComment({...req.body, sender: senderName });
         const ticket = await ticketList.findById(req.params.ticketId )
         if (!ticket) {
-            console.error("Ticket not found for comment creation. ticket ID:", req.params.ticketId);
+            console.error("Ticket not found for comment. ticket ID:", req.params.ticketId);
             return res.status(404).json({ message: "ticket not found " })
         }
-       
         const result = await commentReply.save();
         await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id } });
         
-        res.status(201).json({ message: "new project creataed succesfully", result })
+        res.status(200).json({ message: " comment succesfully", result })
         
     } catch (error) {
         console.error(error)
@@ -104,7 +106,7 @@ const addTicketcomment = async (req, res) => {
 }
 const getAllComment = async (req,res)=>{
     try{
-        const commentList = await ticketComment.find().populate({ path:"ticket"})
+        const commentList = await ticketComment.find().populate({ path: "sender", select: ["fullName","userId"]})
         res.status(200).json({ messaage: "Comment data", commentList })
 
     } catch (error) {
@@ -114,13 +116,16 @@ const getAllComment = async (req,res)=>{
 }
 const deleteComment = async (req, res) => {
     try {
-        const delComment = await ticketComment.findById(req.params.commentId)
+        const commentId = req.params.commentId
+        const delComment = await ticketComment.findByIdAndDelete(commentId)
         if (!delComment) {
-            res.status(404).json({ message: "commentId is not found for deleting the comment" })
+            return res.status(404).json({ message: "commentId is not found for deleting the comment" })
         }
-        res.status(200).json({ message: "comment deleted succesfully ", delComment })
-        await ticketList.comment.findById(req.parmas.commentId, { $remove: { comment: commentId } })
-
+           res.status(200).json({ message: "comment deleted succesfully ", delComment })
+        await ticketList.updateMany(
+            { comment: commentId },
+            { $pull: { comment: commentId } }
+        );
     } catch (error) {
         console.error(error)
         res.status(500).json({ messaage: "internal server error", error })
@@ -129,13 +134,13 @@ const deleteComment = async (req, res) => {
 }
 const updateComment=async (req,res)=>{
     try {
-        const comment=await ticketComment.findById(req.parmas.commentId)
+        const comment=await ticketComment.findById(req.params.Id)
         if (!comment){
             res.status(404).json({message:"comment Id not found"})
         }
         comment.message = req.body.message || comment.message
         result= await comment.save()
-        req.status(200).json({message:"comment updated succesfully"})
+        res.status(200).json({message:"comment updated succesfully",result})
 
     }catch(error){
         console.error(error)

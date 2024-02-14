@@ -71,13 +71,17 @@ const updateProject = async (req, res) => {
 }
 const deleteProject = async (req, res) => {
     try {
-        const deleteProject = await Project.findByIdAndDelete(req.params.projectId)
+        const projectId = req.params.projectId
+        const deleteProject = await Project.findByIdAndDelete(projectId)
         if (!deleteProject) {
             return res.status(404).json({ error: "Project not found" });
         }
-        Client.projects.remove(req.params.projectId);
+        // Client.projects.remove(req.params.projectId);
         res.status(200).json({ message: "project deleted succesfully", deleteProject })
-
+        await Client.updateMany(
+            { projects: projectId },
+            { $pull: { projects: projectId } }
+        );
     } catch (error) {
         console.error(error)
         res.status(500).json({ error: "Internal server error", error });
