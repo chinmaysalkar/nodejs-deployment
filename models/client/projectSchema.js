@@ -17,7 +17,8 @@ const validator=require("validator")
    ],
    question: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
    bugs: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
-   team: [{ type: mongoose.Schema.Types.ObjectId, ref: "Employee" }]
+   team: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+   priority:{type:String }
 
  })
 

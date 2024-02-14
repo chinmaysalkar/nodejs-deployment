@@ -1,13 +1,20 @@
 const mongoose = require("mongoose")
 
 const ticketListSchema = new mongoose.Schema({
-    _id: { type: String, },
+    // employeeId: { type: String, required: [false, "Employee Id is required"] },
     title: { type: String, required: [true, " project title is required"] },
-    priority:{ type:String, required: [true," required priority "]},
-   department:{type:String, required:[true,'department is required']},
-   agentName:{type:String, required:[true,'agent name is required']},
-   date:{type:Date, required:[true, " date is required"]} ,
-   activity:{type:mongoose.Schema.Types.ObjectId, reff:""}
+    department:{type:String, required:[true,'department is required']},
+    openAt:{type:Date, required:true, default:Date.now()} ,
+    //    activity:{type:mongoose.Schema.Types.ObjectId, ref:""},
+    //    agentName:{type:String, required:[true,'agent name is required']},
+     priority:{ type:String, required: [false," required priority "]},
+    comment: [{ 
+        type: mongoose.Schema.Types.ObjectId, ref:"ticketComment" 
+    // sender:{type:String},
+    // message:{type:String},
+    // msgAt:{type:Date, default:Date.now()}
+    }]
+   
 })
 
 const ticketList = mongoose.model("ticketList", ticketListSchema)

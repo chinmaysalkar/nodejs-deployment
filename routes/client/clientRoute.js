@@ -1,44 +1,53 @@
 const express=require("express")
 const router=express.Router();
-const usercontroller=require("../../controllers/clientcontroller")
-const project=require("../../controllers/projectcontroller")
-const taskboard = require("../../controllers/taskcontroller")
-const employee=require("../../controllers/democontroller")
-const doList=require("../../controllers/todoController")
-const ticket=require("../../controllers/ticketController")
+const { deleteClient,updateClient,searchClients,getClientData,createClients, }=require("../../controllers/clientcontroller")
+const { deleteProject,updateProject,searchProject,createData,getAllData, }=require("../../controllers/projectcontroller")
+const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
+const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
+const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment, updateTicketReplay }=require("../../controllers/ticketController");
+const { verifyToken } = require("../../middlewares/token");
+// const { verifyToken } = require("../../middlewares/token");
 
-//employee
-router.post("/employee", employee.addEmployee)
-router.get('/empData', employee.getEmpData)
+
 
 //client
-router.post("/clients", usercontroller.createClients)
-router.get('/clientData',usercontroller.getClientData)
-router.get('/searchClient/:key', usercontroller.searchClients)
-router.put("/updateClient/:clientId", usercontroller.updateClient)
- router.delete("/dropClient/:clientId",usercontroller.deleteClient)
+router.post("/clients", verifyToken, createClients)
+router.get('/clientData',getClientData)
+router.get('/searchClient/:key', searchClients)
+router.put("/updateClient/:clientId", updateClient)
+router.delete("/deleteClient/:clientId",deleteClient)
 
 //project
-router.post("/pDetails/:clientId", project.createData)
-router.get('/pData', project.getAllData)
-router.get('/searchProject/:key', project.searchProject)
-router.put("/updateProject/:projectId", project.updateProject)
-router.delete("/dropProject/:projectId", project.deleteProject)
+router.post("/pDetails/:clientId", createData)
+router.get('/pData', getAllData)
+router.get('/searchProject/:key', searchProject)
+router.put("/updateProject/:projectId", updateTicket)
+router.delete("/deleteProject/:projectId", deleteProject)
 
 //taskboard
-router.post("/addTask", taskboard.addNewTask)
-router.get('/taskData', taskboard.getAllTaskData)
-router.get('/searchTrackboard/:key', taskboard.searchTask)
-router.put("/updateTaskboard/:taskId", taskboard.updateTaskboard)
-router.delete("/droptask/:taskId", taskboard.deleteTask)
+router.post("/addTask", addNewTask)
+router.get('/taskData/:action', getTaskPercentage)
+router.get('/taskData', getAllTaskData)
+router.get('/searchTrackboard/:key', searchTask)
+router.put("/updateTaskboard/:taskId", updateTaskboard)
+router.delete("/deletetask/:taskId", deleteTask)
 
 //ticket
-router.post("/addTicket", ticket.addNewTicket)
-router.get('/ticketData', ticket.getAllTicketData)
-router.get('/searchTicket/:key', ticket.searchTickets)
+router.post("/addTicket/:userId" ,addNewTicket)
+router.get('/ticketData', getAllTicketData)
+router.get('/searchTicket/:key', searchTickets)
+router.put("/Updateticket/:Id", updateTicket)
+router.put("/ticketReply/:Id",updateTicketReplay)
+router.delete("/deleteticket/:ticketId", deleteTicket)
 
 //todo
-router.post("/addDoTask", doList.addTodoList)
-router.get("/getTodoList", doList.getTodoList)
-router.delete("/delete", doList.deleteTodoList)
+router.post("/addDoTask", addTodoList)
+router.get("/getTodoList", getTodoList)
+router.delete("/deleteTask/:taskId", deleteTodoList)
+
+//comment
+router.post("/comment/:ticketId", addTicketcomment)
+router.get("/getAllComments", getAllComment)
+
+
 module.exports= router;

@@ -34,7 +34,9 @@ const updateTaskboard = async (req, res) => {
         task.startDate = req.body.startDate || task.startDate
         task.endDate = req.body.endDate || task.endDate
         task.action = req.body.action || task.action
-
+        ['taskname', 'team', 'startDate', 'endDate', 'action'].forEach(field => {
+            task[field] = req.body[field] || task[field];
+        });
         result = await task.save()
         res.status(200).json({ message: "client is updated succesfully", Result: result })
 
@@ -73,6 +75,26 @@ const deleteTask = async (req, res) => {
         res.status(500).json("internal server error", error)
     }
 }
+//grid view 
+const getTaskPercentage = async (req, res) => {
+    try {
+        const action = req.params.action;
+        const totalTask = await Taskboard.find()
+        const task = await Taskboard.find({ action });
+        if (!action) {
+            res.status(404).json({ message: "searched action not found " })
+        }
+        const progress = (task.length * 100) / totalTask.length
+
+        res.status(200).json({ messaage: `the ${progress} % task is ${action} ` });
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ messaage: "internal server error" })
+    }
+}
+
+
 
 module.exports = {
     addNewTask,
@@ -80,4 +102,6 @@ module.exports = {
     updateTaskboard,
     searchTask,
     deleteTask,
+
+    getTaskPercentage
 }

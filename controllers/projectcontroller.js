@@ -14,9 +14,9 @@ const createData = async (req, res) => {
         }
         const result = await project.save();
         client.projects.push(result._id);
-
-        await client.save();
-        res.status(201).json({ message: "new project creataed succesfully", result })
+        await client.save(result._id);
+        
+         res.status(201).json({ message: "new project creataed succesfully", result })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: "internal server error", error })
@@ -25,7 +25,7 @@ const createData = async (req, res) => {
 const getAllData = async (req, res) => {
     try {
         const project = await Project.find().populate({ path: "team", select: ["employeeName", "_id"] })
-        res.status(200).json(project)
+        res.status(200).json({ message: "Project created succesfully", project })
 
     } catch (error) {
         console.error(error)
@@ -80,7 +80,7 @@ const deleteProject = async (req, res) => {
 
     } catch (error) {
         console.error(error)
-        res.status(500).json("internal server error", error)
+        res.status(500).json({ error: "Internal server error", error });
     }
 }
 
