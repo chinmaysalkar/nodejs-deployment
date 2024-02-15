@@ -1,6 +1,7 @@
 const ticketList = require("../models/client/ticketList");
 const ticketComment = require("../models/client/ticketComment");
 const User=require("../models/user/usermodel")
+const jwt = require('jsonwebtoken');
 
 //ticket 
 const addNewTicket = async (req, res) => {
@@ -46,13 +47,25 @@ const getAllTicketData = async (req, res) => {
         res.status(500).json({ message: "internal server error", error })
     }
 }
+const singleTicketData = async (req, res) => {
+    try {
+        const ticketData = await ticketList
+        .findById(req.params.ticketId)
+        .populate({ path: 'comment', select: ["sender", "message"] })
+        res.status(200).json({ message: "ticket data is shown succesfully", ticketData })
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "internal server error", error })
+    }
+}
 const updateTicket= async (req,res)=>{
     try{
         const ticket = await ticketList.findById(req.params.Id)
           if (!ticket){
            return res.status(404).json({message:"ticket not found"})
           }
-          ["title","department","comment","employeeId","priority"].forEach(field=>{
+        ["title", "department","description","employeeId","priority"].forEach(field=>{
               ticket[field] = req.body[field] || ticket[field];
           })
         
@@ -84,13 +97,15 @@ const deleteTicket = async (req, res) => {
 
 const addTicketcomment = async (req, res) => {
     try {
-      
-        // const { message}=req.body
-        const fullName = req.user._id;
-        console.log(fullName);
-        console.log(req.user);
-
-        const commentReply = new ticketComment(req.body);
+       
+        // console.log(req.user)
+        userId = req.user.userId
+        console.log(userId)
+        const user =await User.findById(userId)
+        if (!user){
+            return res.status(404).json("user not found")
+        }
+        const commentReply = new ticketComment({...req.body, sender:user.fullName});
         const ticket = await ticketList.findById(req.params.ticketId )
         if (!ticket) {
             console.error("Ticket not found for comment. ticket ID:", req.params.ticketId);
@@ -160,6 +175,7 @@ module.exports={
     addNewTicket,
     deleteTicket,
     updateTicket,
+    singleTicketData,
 
     
     addTicketcomment,

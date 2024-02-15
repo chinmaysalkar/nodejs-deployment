@@ -8,6 +8,7 @@ const validator=require("validator")
    createDate:{type:String, required:[true, " date is required"] },
    creator:{type:String, required:[true," Creator name is requred"] },
    deal: { type: String, required: [true, "deal amount is requird"] },
+   task: [{ type: mongoose.Schema.Types.ObjectId, ref: "Taskboard" }],
    clientId: { type: mongoose.Schema.Types.ObjectId, ref:"Client"},
    comment: [
      {

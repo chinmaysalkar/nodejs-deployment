@@ -16,16 +16,19 @@ const toDoList = require("../models/client/todoList");
     }
     const getClientData=async(req,res)=>{
         try{
-            const clients = await Client.find().populate({ path: 'projects', select:["pname","creator","team","deal"] })
+            const clients = await Client
+                       .find()
+                       .populate({ path: 'projects', select:["pname","creator","team","deal"] })
             const clientsWithDetails = clients.map(client => {
                 const totalProjects = client.projects.length;
                 const totalDealAmount = client.projects.reduce((total, project) => total +Number(project.deal || 0), 0);
                 return {
                     _id: client._id,
                     clientName: client.clientName,
-                    email: client.email,
+                    clientEmail: client.clientEmail,
                     place: client.place,
                     link: client.link,
+                    companyName:client.companyNameName,
                     totalProjects,
                     totalDealAmount,
                     projects: client.projects,  
@@ -53,15 +56,19 @@ const toDoList = require("../models/client/todoList");
     }
     const updateClient= async (req,res)=>{
         try{
-            const client =await Client.findById (req.params.clientId)
+            const client =await Client.findByIdAndUpdate(req.params.Id)
+            console.log(client)
             if (!client){
-                res.status(404).json(" client id not found")
+                return  res.status(404).json(" client id not found")
             }
-            client.clientName=req.body.clientName||client.clientName
-            client.email=req.body.email|| client.email
-            client.link=req.body.link||client.link
-            client.place=req.body.place|| client.place
-            client.project=req.body.projectId|| client.project
+            // client.clientName=req.body.clientName||client.clientName
+            // client.email=req.body.email|| client.email
+            // client.link=req.body.link||client.link
+            // client.place=req.body.place|| client.place
+            // client.project=req.body.projectId|| client.project
+            ["clientName", "clientEmail", "projects", "link","place","compalyName"].forEach(field =>{
+            client[field] = req.body[field] || client[field]
+          });
 
             result=await client.save()
             res.status(200).json({message:"client is updated succesfully", result})

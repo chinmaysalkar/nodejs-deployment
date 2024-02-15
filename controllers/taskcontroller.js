@@ -1,21 +1,28 @@
 const Taskboard = require("../models/client/taskboard")
-
+const Project=require("../models/client/projectSchema")
+const { json } = require("body-parser")
 //taskboard
 const addNewTask = async (req, res) => {
     try {
         const task = new Taskboard(req.body)
+        const project = await Project.findById(req.params.projectId)
+        if(!project){
+            return res.status(404).json({ message: "project not found" })
+        }
         const result = await task.save()
-        console.log(result)
+        
         res.status(200).json({ message: "new client created succesfully", result })
-
+        await Project.findByIdAndUpdate(req.params.projectId, { $push: { task: result._id } });
     } catch (error) {
         console.error(error)
-        res.status(500).json("internal server error", error)
+        res.status(500).json({ message: "internal server error", error})
     }
 }
 const getAllTaskData = async (req, res) => {
     try {
-        const taskData = await Taskboard.find().populate({ path: "team", select: ["employeeName", "_id"]})
+        const taskData = await Taskboard.find()
+             .populate({ path: "team", select: ["employeeName", "_id"]})
+             
         res.status(200).json({ message: "task board data shown succesfully", taskData })
 
     } catch (error) {
