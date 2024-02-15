@@ -24,7 +24,9 @@ const createData = async (req, res) => {
 }
 const getAllData = async (req, res) => {
     try {
-        const project = await Project.find().populate({ path: "team", select: ["employeeName", "_id"] })
+        const project = await Project.find()
+              .populate({ path: "team", select: ["employeeName", "_id"] })
+            .populate({ path: "task", select: ["taskname", "_id"] })
         res.status(200).json({ message: "Project created succesfully", project })
 
     } catch (error) {
