@@ -86,9 +86,11 @@ const addTicketcomment = async (req, res) => {
     try {
       
         // const { message}=req.body
-        const senderName = req.user
-        console.log(req.user._id)
-        const commentReply = new ticketComment({...req.body, sender: senderName });
+        const fullName = req.user._id;
+        console.log(fullName);
+        console.log(req.user);
+
+        const commentReply = new ticketComment(req.body);
         const ticket = await ticketList.findById(req.params.ticketId )
         if (!ticket) {
             console.error("Ticket not found for comment. ticket ID:", req.params.ticketId);
