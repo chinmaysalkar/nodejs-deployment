@@ -29,16 +29,12 @@ const updateTaskboard = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: "task not found" })
         }
-        task.taskname = req.body.task || task.taskname
-        task.team = req.body.team || task.team
-        task.startDate = req.body.startDate || task.startDate
-        task.endDate = req.body.endDate || task.endDate
-        task.action = req.body.action || task.action
+        
         ['taskname', 'team', 'startDate', 'endDate', 'action'].forEach(field => {
             task[field] = req.body[field] || task[field];
         });
         result = await task.save()
-        res.status(200).json({ message: "client is updated succesfully", Result: result })
+        res.status(200).json({ message: "client is updated succesfully", result })
 
 
     } catch (error) {
