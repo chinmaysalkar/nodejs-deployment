@@ -4,14 +4,16 @@ const { deleteClient,updateClient,searchClients,getClientData,createClients, }=r
 const { deleteProject,updateProject,searchProject,createData,getAllData, }=require("../../controllers/projectcontroller")
 const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
 const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
-const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment }=require("../../controllers/ticketController");
+const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment, singleTicketData }=require("../../controllers/ticketController");
 const { verifyToken } = require("../../middlewares/token");
+const { mailToClient } = require("../../controllers/sendMailController");
 
 
 
 
 //client
-router.post("/clients", verifyToken, createClients)
+router.post("/clients", createClients)
+router.post("/sendMail/:clientId",  mailToClient)
 router.get('/clientData',getClientData)
 router.get('/searchClient/:key', searchClients)
 router.put("/updateClient/:Id", updateClient)
@@ -25,7 +27,7 @@ router.put("/updateProject/:projectId", updateProject)
 router.delete("/deleteProject/:projectId", deleteProject)
 
 //taskboard
-router.post("/addTask", addNewTask)
+router.post("/addTask/:projectId", addNewTask)
 router.get('/taskData/:action', getTaskPercentage)
 router.get('/taskData', getAllTaskData)
 router.get('/searchTrackboard/:key', searchTask)
@@ -35,6 +37,7 @@ router.delete("/deletetask/:taskId", deleteTask)
 //ticket
 router.post("/addTicket/:userId" ,addNewTicket)
 router.get('/ticketData', getAllTicketData)
+router.get('/ticketData/:ticketId', singleTicketData)
 router.get('/searchTicket/:key', searchTickets)
 router.put("/Updateticket/:Id", updateTicket)
 router.delete("/deleteticket/:ticketId", deleteTicket)
