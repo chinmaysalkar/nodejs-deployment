@@ -48,13 +48,15 @@ const profileSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    // profilePhoto: {
-    //     type: File,
-    //     required: true
-    // }
+    profilePhoto: {
+
+        type:String
+      }
     
     
 });
+
+
 
 const profileModel = mongoose.model('User', profileSchema);
 module.exports = profileModel

@@ -45,15 +45,10 @@ const loginUser = async (req, res) => {
                 error: 'Please Verify your Profile, contact HR.' 
             });
         }
-        
-        
+            
         deleteOldAccessToken(userData._id);
         
         const accessToken = generateAccessToken({ user: userData });
-
-        // to hash the access token
-        // const saltRounds = 10;
-        // const hashedToken = await bcrypt.hash(accessToken, saltRounds);
 
         const accessTokenData = await AccessTokenModel.findOne({ id: userData._id });
 
@@ -91,14 +86,9 @@ const logout = async(req, res) => {
         const bearer = token.split(' ');
         const bearerToken = bearer[1];
         
-        
-
-
-        deleteOldAccessToken();
+         
         const newBlacklist = new Blacklist({token: bearerToken});
         await newBlacklist.save();
-
-        
 
         // res.setHeader('Clear-Site-Data', '"cookies","storage"');
 

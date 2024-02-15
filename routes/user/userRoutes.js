@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer();
 const {createUser,  deleteUser, viewUser, updateUser, updateVerificationStatus} = require('../../controllers/profileController.js')
 const {loginUser, logout} = require('../../controllers/loginOutController.js')
 const {forgetPassword} = require('../../controllers/passwordController.js')
@@ -14,7 +16,7 @@ const { createHoliday, getHoliday } = require('../../controllers/holidaysControl
 
 
 //Routes
-router.post('/createUser', profileValidation, createUser);
+router.post('/createUser', upload.fields([{ name: 'profilePhoto', maxCount: 1 }]) , profileValidation, createUser);
 router.post('/forget-password',mailVerificationValidation , forgetPassword);
 router.post('/login',loginValidation, loginUser)
 
