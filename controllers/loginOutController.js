@@ -90,10 +90,11 @@ const logout = async(req, res) => {
         const token = req.body.token || req.query.token || req.headers['authorization'];
         const bearer = token.split(' ');
         const bearerToken = bearer[1];
+        
+        
 
 
-
-        deleteOldAccessToken(userId);
+        deleteOldAccessToken();
         const newBlacklist = new Blacklist({token: bearerToken});
         await newBlacklist.save();
 
