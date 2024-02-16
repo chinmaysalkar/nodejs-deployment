@@ -16,7 +16,7 @@ const createData = async (req, res) => {
         client.projects.push(result._id);
         await client.save(result._id);
         
-         res.status(201).json({ message: "new project creataed succesfully", result })
+         res.status(201).json({ message: "new project created succesfully", result })
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: "internal server error", error })

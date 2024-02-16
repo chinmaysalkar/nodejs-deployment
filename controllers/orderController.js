@@ -1,5 +1,5 @@
 const placeOrderModel = require("../models/user/placeOrderSchema");
-const User = require("../models/user/usermodel.js");
+const User = require("../models/user/profileModel.js");
 
 const { validationResult } = require("express-validator");
 const {generateOrderId} = require('../middlewares/helpers.js');

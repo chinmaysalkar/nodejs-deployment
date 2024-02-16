@@ -2,30 +2,36 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const upload = multer();
-const {createUser,  deleteUser, viewUser, updateUser, updateVerificationStatus} = require('../../controllers/profileController.js')
-const {loginUser, logout} = require('../../controllers/loginOutController.js')
+const {updateVerificationStatus, createProfile, updateProfile, viewProfile, deleteProfile} = require('../../controllers/profileController.js')
+const {loginUser, logout, getLoginLogoutStatsByDate} = require('../../controllers/loginOutController.js')
 const {forgetPassword} = require('../../controllers/passwordController.js')
-const { mailVerificationValidation, loginValidation, updateProfileValidation, otpValidation, profileValidation, placeOrderValidation, updateOrderValidation, payrollValidation, updateStatusValidation, holidayValidation} = require('../../middlewares/validation.js');
+const { mailVerificationValidation, loginValidation, updateProfileValidation, otpValidation, profileValidation, placeOrderValidation, updateOrderValidation, payrollValidation, updateStatusValidation, holidayValidation, userValidation, UpdateUserValidation} = require('../../middlewares/validation.js');
 const {verifyToken} = require('../../middlewares/token.js');
 const {sendOtp,verifyOtp} = require('../../controllers/otpController.js');
 const {placeOrder, updateOrderStatus, viewOrders, CancelOrder} = require('../../controllers/orderController.js');
 const { payroll, updatePayrollStatus, payRollreset } = require('../../controllers/payrollController.js');
 const { getDepartmentData } = require('../../controllers/departmentController.js');
 const { createHoliday, getHoliday } = require('../../controllers/holidaysController.js');
+const { createUser, viewUser, updateUser, deleteUser } = require('../../controllers/userController.js');
 
 
 
 //Routes
-router.post('/createUser', upload.fields([{ name: 'profilePhoto', maxCount: 1 }]) , profileValidation, createUser);
+router.post('/createUser',userValidation, createUser)
+router.get('/viewUser',viewUser)
+router.put('/updateUser',UpdateUserValidation ,updateUser)
+router.delete('/deleteUser',deleteUser)
+router.post('/createProfile', upload.fields([{ name: 'profilePhoto', maxCount: 1 }]) , profileValidation, createProfile);
 router.post('/forget-password',mailVerificationValidation , forgetPassword);
 router.post('/login',loginValidation, loginUser)
 
 //Authenticated routes
 
-router.get('/logout',verifyToken, logout)  
-router.post('/updateUser',verifyToken, updateProfileValidation, updateUser); 
-router.get('/viewUser',verifyToken, viewUser); 
-router.delete('/deleteUser',verifyToken, deleteUser)
+router.get('/logout',verifyToken, logout) 
+router.get('/getLoginLogoutLog',verifyToken, getLoginLogoutStatsByDate)  
+router.post('/updateProfile',verifyToken, updateProfileValidation, updateProfile); 
+router.get('/viewProfile',verifyToken, viewProfile); 
+router.delete('/deleteProfile',verifyToken, deleteProfile)
 router.post('/updateVerificationStatus',verifyToken, updateVerificationStatus); 
 router.get('/getDepartmentData',verifyToken, getDepartmentData);
 

@@ -1,4 +1,4 @@
-const Profile = require('../models/user/usermodel');
+const Profile = require('../models/user/profileModel');
 
 
 const generateRandom4digit = function () {
@@ -24,20 +24,13 @@ const generateOrderId = function() {
     return orderId;
 }
 
-// Function to merge and format the name
-function mergeAndFormatName(fullName) {
-  // Split the full name into an array of words
-  const nameParts = fullName.split(' ');
 
-  // Check if there are at least two words in the full name
-  if (nameParts.length >= 2) {
-      // Concatenate the first word in lowercase with the second word in lowercase
-      const username = nameParts[0].toLowerCase() + nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1).toLowerCase();
-      return username;
-  } else {
-      // If only one word is available, return it in lowercase
-      return nameParts[0].toLowerCase();
-  }
+// Function to merge first name and last name as username
+function generateUsername(firstName, lastName) {
+    const modifiedFirstName = firstName.toLowerCase() 
+    const modifiedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase() ;
+    const username = `${modifiedFirstName}${modifiedLastName}`;
+    return username;
 }
 
 
@@ -46,8 +39,6 @@ function mergeAndFormatName(fullName) {
 
 
 
-
-
 module.exports = {
-    getNextUserId, generateRandom4digit, generateOrderId,mergeAndFormatName
+    getNextUserId, generateRandom4digit, generateOrderId,generateUsername
 };
