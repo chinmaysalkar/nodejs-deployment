@@ -20,7 +20,7 @@ const profileValidation =[
     check("fullName","Name is required").not().isEmpty(),
     check("mobile","Please enter valid mobile number").not().isEmpty().isLength(10),
     check("department","Department is required").not().isEmpty(),
-    check("designation","Role is required").not().isEmpty(),
+    check("designation","Designation is required").not().isEmpty(),
     check("role","Role is required").not().isEmpty(),
     check("password","Password must be at least 6 characters consists of at least 1 lowercase, 1 uppercase, 1 number and 1 symbol ").isStrongPassword({
         minLength: 6,
