@@ -1,14 +1,9 @@
 const jwt = require('jsonwebtoken');
 const Blacklist = require('../models/user/blacklistSchema.js');
 
-// const generateAccessToken = (user) => {
-    
-//     const token = jwt.sign( user, process.env.ACCESS_TOKEN_SECRET,{ expiresIn:'9h'} )
-//     return token;
-// }
 
 const generateAccessToken = (user) => {
-    const payload = { userId: user.user._id }; // Only include the user's id in the token
+    const payload = { userId: user._id }; // Only include the user's id in the token
     const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn:'9h' });
     
     return token;
@@ -49,6 +44,27 @@ const verifyToken= async (req, res, next)=>{
 
 
 
+const getUserIdFromToken = (token) => {
+    try {
+        
+        // Verify and decode the token
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        
+        // Extract the user ID from the decoded token payload
+        const userId = decoded.userId;
+
+        // Return the user ID
+        return userId;
+    } catch (error) {
+        // Token verification failed or invalid token
+        return null;
+    }
+};
+
+
+
+
+
 module.exports = {
-    verifyToken, generateAccessToken
+    verifyToken, generateAccessToken, getUserIdFromToken
 }
