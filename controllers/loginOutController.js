@@ -1,11 +1,12 @@
-const User = require('../models/user/usermodel.js'); 
-const {validationResult} = require('express-validator');
-const {generateAccessToken} = require('../middlewares/token.js');
 const bcrypt = require('bcrypt');
+const {validationResult} = require('express-validator');
+
+const Profile = require('../models/user/profileModel.js'); 
 const Blacklist = require('../models/user/blacklistSchema.js');
 const AccessTokenModel = require('../models/user/accessTokenSchema.js');
-const jwt = require('jsonwebtoken');
+const LoginLogoutLog = require('../models/user/loginLogoutLogModel.js');
 const { deleteOldAccessToken } = require('../middlewares/blacklist.js');
+const {generateAccessToken} = require('../middlewares/token.js');
 
 const loginUser = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ const loginUser = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const userData = await User.findOne({ email: email });
+        const userData = await Profile.findOne({ email: email });
 
         if (!userData) {
             return res.status(404).json({ 
@@ -25,7 +26,6 @@ const loginUser = async (req, res) => {
                 error: 'Email and Password is Incorrect' 
             });
         }
-
         const passwordMatch = await bcrypt.compare(password, userData.password);
         if (!passwordMatch) {
             return res.status(404).json({ 
@@ -64,6 +64,13 @@ const loginUser = async (req, res) => {
             });
             await newAccessTokenData.save();
         }
+        const existingLoginLog = await LoginLogoutLog.findOne({ userId: userData._id, logoutTime: null });
+        if (existingLoginLog) {
+            existingLoginLog.logoutTime = new Date();
+            await existingLoginLog.save();
+        }
+        const loginLog = new LoginLogoutLog({ userId: userData._id, loginTime: new Date() });
+        await loginLog.save();
 
 
         return res.status(200).json({ 
@@ -85,10 +92,18 @@ const logout = async(req, res) => {
         const token = req.body.token || req.query.token || req.headers['authorization'];
         const bearer = token.split(' ');
         const bearerToken = bearer[1];
+
+        console.log(req.user)
         
          
         const newBlacklist = new Blacklist({token: bearerToken});
         await newBlacklist.save();
+
+        const logoutLog = await LoginLogoutLog.findOne({ userId: req.user.userId, logoutTime: null });
+        if (logoutLog) {
+            logoutLog.logoutTime = new Date();
+            await logoutLog.save();
+        }
 
         // res.setHeader('Clear-Site-Data', '"cookies","storage"');
 
@@ -104,7 +119,49 @@ const logout = async(req, res) => {
     }
 }
 
+const getLoginLogoutStatsByDate = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        const logs = await LoginLogoutLog.find({ userId });
+
+        const loginLogoutStatsByDate = {};
+        
+        logs.forEach(log => {
+            const date = log.loginTime.toISOString().split('T')[0];
+            
+            if (!loginLogoutStatsByDate[date]) {
+                loginLogoutStatsByDate[date] = {
+                    logins: 0,
+                    logouts: 0,
+                    loginLogoutTimings: []
+                };
+            }
+
+            loginLogoutStatsByDate[date].loginLogoutTimings.push({
+                loginTime: log.loginTime,
+                logoutTime: log.logoutTime
+            });
+
+            loginLogoutStatsByDate[date].logins++;
+            if (log.logoutTime !== null) {
+                loginLogoutStatsByDate[date].logouts++;
+            }
+        });
+
+        return res.status(200).json({ 
+            success: true, 
+            loginLogoutStatsByDate
+        });
+
+    } catch (error) {
+        return res.status(400)
+        .json({ success: false, 
+            error: error.message });
+    }
+}
+
 module.exports = {
     loginUser,
-    logout
+    logout,
+    getLoginLogoutStatsByDate
 }

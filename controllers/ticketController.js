@@ -1,6 +1,6 @@
 const ticketList = require("../models/client/ticketList");
 const ticketComment = require("../models/client/ticketComment");
-const User=require("../models/user/usermodel")
+const User=require("../models/user/profileModel")
 const jwt = require('jsonwebtoken');
 
 //ticket 

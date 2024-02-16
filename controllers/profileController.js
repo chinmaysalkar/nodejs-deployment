@@ -1,14 +1,15 @@
 const bcrypt = require('bcrypt');
-const User = require("../models/user/usermodel");
 const { validationResult } = require("express-validator");
-const { getNextUserId, mergeAndFormatName } = require("../middlewares/helpers");
-const {sendMail} = require("../middlewares/mailer");
-const AccessTokenModel = require("../models/user/accessTokenSchema");
-const Blacklist = require("../models/user/blacklistSchema");
+
+const Profile = require("../models/user/profileModel");
+const User = require("../models/user/userModel");
+
 const { deleteOldAccessToken } = require('../middlewares/blacklist');
 const {uploadProfilePhotoToDrive} = require('../middlewares/upload')
+const {sendMail} = require("../middlewares/mailer");
+const { getNextUserId, generateUsername } = require("../middlewares/helpers");
 
-const createUser = async (req, res) => {
+const createProfile = async (req, res) => {
     
     try {
       const nextId = await getNextUserId();
@@ -22,7 +23,8 @@ const createUser = async (req, res) => {
 
       const {
         email,
-        fullName,
+        firstName,
+        lastName,
         mobile,
         department,
         designation,
@@ -32,24 +34,27 @@ const createUser = async (req, res) => {
       } = req.body;
 
 
-      const existingUser = await User.findOne({ email: email });
-      if (existingUser) {
+      const existingProfile = await Profile.findOne({ email: email });
+      if (existingProfile) {
         return res.status(400).json({
           success: false,
-          error: "User with this Email already exist in the profile",
+          error: "User profile with this Email already exists. Please try updating the profile.",
         });
       }
-      //create username using fullName
-      const mergedName = mergeAndFormatName(fullName);
+      
+      
+      
+      const mergedName = generateUsername(firstName, lastName);
 
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+      
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
       // Update profile's role
-      const updatedProfile = new User({
+      const updatedProfile = new Profile({
         userId: nextId,
         email,
-        fullName,
+        firstName,
+        lastName,
         mobile,
         department,
         designation,
@@ -61,6 +66,15 @@ const createUser = async (req, res) => {
 
 
       const savedUser = await updatedProfile.save();
+
+      const newUser = new User({
+        email,
+        firstName,
+        lastName,
+        password: hashedPassword,
+        
+      });
+      await newUser.save();
 
       // Upload profile photo to Google Drive after saving user data to MongoDB
       try {
@@ -79,13 +93,13 @@ const createUser = async (req, res) => {
         });
       }
     
-      const msg =
-        "<p>Hii " +
-        fullName +
-        ', your account has been created successfully. Please <a href="http://localhost:5500/auth/verify?id=' +
-        savedUser._id +
-        '">verify</a> your mail </p>';
-      sendMail(email, " Verify Account", msg);
+      // const msg =
+      //   "<p>Hii " +
+      //   fullName +
+      //   ', your account has been created successfully. Please <a href="http://localhost:5500/auth/verify?id=' +
+      //   savedUser._id +
+      //   '">verify</a> your mail </p>';
+      // sendMail(email, " Verify Account", msg);
 
       res.status(200).json({
         success: true,
@@ -99,14 +113,14 @@ const createUser = async (req, res) => {
     }
 };
 
-const updateUser = async (req, res) => {
+const updateProfile = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const profileData = await User.findOne({ _id:req.body.id });
+        const profileData = await Profile.findOne({ _id:req.body.id });
         if (!profileData) {
             return res.status(404).json({ success: false, error: 'Profile not found' });
         }
@@ -117,7 +131,7 @@ const updateUser = async (req, res) => {
             
             const msg = '<p>Hii '+fullName+', your account has been created successfully. Please <a href="http://localhost:5500/auth/verify?id='+savedUser._id+'">verify</a> your mail </p>';
 
-            const userData =await profile.findByIdAndUpdate({_id:req.body.id}, { 
+            const userData =await Profile.findByIdAndUpdate({_id:req.body.id}, { 
                 $set:{ newEmail: data.email, isVerified:false }
             },{new:true } );
             sendMail(data.email, 'Verify New Email', msg);
@@ -154,9 +168,9 @@ const updateUser = async (req, res) => {
         res.status(400).json({ success: false, error: error.message });
     }
 }
-const viewUser = async (req, res) => {
+const viewProfile = async (req, res) => {
     try {
-        const userData = await User.find({});
+        const userData = await Profile.find({});
 
         return res.status(200)
         .json({ success:true,
@@ -170,14 +184,15 @@ const viewUser = async (req, res) => {
     }
 }
 
-const deleteUser = async (req, res) => {
+const deleteProfile = async (req, res) => {
+    const{}=req.body();
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, error: errors.array() });
       }
       
-      const deletedUser = await User.findByIdAndDelete({ _id: req.body.id });
+      const deletedUser = await Profile.findByIdAndDelete({ _id: req.body.id });
 
       //const deletedUser = await User.findById({ _id: req.body.id });
 
@@ -208,7 +223,7 @@ const deleteUser = async (req, res) => {
 const updateVerificationStatus = async (req, res) => {
     try {
         const {id} = req.body;
-        const user = await User.findOne({_id: id});
+        const user = await Profile.findOne({_id: id});
         
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found' });
@@ -231,4 +246,4 @@ const updateVerificationStatus = async (req, res) => {
 
 
 
-module.exports = { createUser, updateUser ,viewUser, deleteUser,updateVerificationStatus };
+module.exports = { createProfile,updateProfile,viewProfile,deleteProfile ,updateVerificationStatus };

@@ -1,5 +1,5 @@
 const Otp = require('../models/user/otpSchema');
-const User = require('../models/user/usermodel.js');
+const User = require('../models/user/profileModel.js');
 const { validationResult } = require('express-validator');
 const { oneMinuteExpiry, threeMinuteExpiry } = require('../middlewares/otpExpiry');
 const {sendMail} = require('../middlewares/mailer.js');

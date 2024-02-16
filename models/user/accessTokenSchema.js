@@ -5,7 +5,7 @@ const accessTokenCheck = new mongoose.Schema({
     id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
+        ref: 'Profile'
     },
     token: {
         type: String,
