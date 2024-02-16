@@ -4,7 +4,7 @@ const { deleteClient,updateClient,searchClients,getClientData,createClients, }=r
 const { deleteProject,updateProject,searchProject,createData,getAllData, }=require("../../controllers/projectcontroller")
 const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
 const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
-const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment, singleTicketData }=require("../../controllers/ticketController");
+const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment, singleTicketData, likeTicket, closeTicket }=require("../../controllers/ticketController");
 const { verifyToken } = require("../../middlewares/token");
 const { mailToClient } = require("../../controllers/sendMailController");
 
@@ -40,6 +40,7 @@ router.get('/ticketData', getAllTicketData)
 router.get('/ticketData/:ticketId', singleTicketData)
 router.get('/searchTicket/:key', searchTickets)
 router.put("/Updateticket/:Id", updateTicket)
+router.put("/closedTicket/:Id/closed", closeTicket)
 router.delete("/deleteticket/:ticketId", deleteTicket)
 
 //todo
@@ -47,11 +48,13 @@ router.post("/addDoTask", addTodoList)
 router.get("/getTodoList", getTodoList)
 router.delete("/deleteTask/:taskId", deleteTodoList)
 
-//comment
+//comment,like,unlike
 router.post("/comment/:ticketId", verifyToken, addTicketcomment)
 router.get("/getAllComments", getAllComment)
 router.put("/UpdateComment/:Id",updateComment)
 router.delete("/deleteComment/:commentId",deleteComment)
+router.put("/like/:ticketId",verifyToken,likeTicket)
+
 
 
 module.exports= router;

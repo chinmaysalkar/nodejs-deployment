@@ -1,6 +1,6 @@
 const Taskboard = require("../models/client/taskboard")
 const Project=require("../models/client/projectSchema")
-const { json } = require("body-parser")
+
 //taskboard
 const addNewTask = async (req, res) => {
     try {

@@ -1,11 +1,22 @@
 
 const Client = require("../models/client/clientSchema");
 const toDoList = require("../models/client/todoList");
+const bcrypt = require('bcrypt');
+
 
    //client
     const createClients= async(req,res)=>{
-         try{
-             const newClient = new Client(req.body,)
+        try {
+            const maxUserId = await Client.findOne({}, { _id: 1 }, { sort: { _id: -1 } }).exec();
+            const startingId = maxUserId ? parseInt(maxUserId._id.split('-')[1]) + 1 : 1;
+            const newUserId = `CLI-${startingId.toString().padStart(4, '0')}`;
+            
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+            const newClient = new Client({ ...req.body, _id: newUserId, password: hashedPassword })
+            
+            
+
             const saveClient = await newClient.save()
             res.status(200).json({message:"new client created succesfully",saveClient})
 
@@ -19,7 +30,8 @@ const toDoList = require("../models/client/todoList");
             const clients = await Client
                        .find()
                        .populate({ path: 'projects', select:["pname","creator","team","deal"] })
-            const clientsWithDetails = clients.map(client => {
+           //manually populate  
+              const clientsWithDetails = clients.map(client => {
                 const totalProjects = client.projects.length;
                 const totalDealAmount = client.projects.reduce((total, project) => total +Number(project.deal || 0), 0);
                 return {
@@ -61,11 +73,7 @@ const toDoList = require("../models/client/todoList");
             if (!client){
                 return  res.status(404).json(" client id not found")
             }
-            // client.clientName=req.body.clientName||client.clientName
-            // client.email=req.body.email|| client.email
-            // client.link=req.body.link||client.link
-            // client.place=req.body.place|| client.place
-            // client.project=req.body.projectId|| client.project
+            
             ["clientName", "clientEmail", "projects", "link","place","compalyName"].forEach(field =>{
             client[field] = req.body[field] || client[field]
           });

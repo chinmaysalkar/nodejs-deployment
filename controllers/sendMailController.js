@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+
 const {sendMail}=require("../middlewares/mailer")
 const Client = require("../models/client/clientSchema");
 const mailToClient = async (req,res)=>{

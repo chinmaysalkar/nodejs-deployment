@@ -10,14 +10,7 @@ const validator=require("validator")
    deal: { type: String, required: [true, "deal amount is requird"] },
    task: [{ type: mongoose.Schema.Types.ObjectId, ref: "Taskboard" }],
    clientId: { type: mongoose.Schema.Types.ObjectId, ref:"Client"},
-   comment: [
-     {
-       type: String, created: { type: Date, default: Date.now() },
-       postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-     }
-   ],
-   question: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
-   bugs: [{ type: mongoose.Schema.Types.ObjectId, reff: "" }],
+   
    team: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
    priority:{type:String }
 

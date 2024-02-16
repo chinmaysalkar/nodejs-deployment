@@ -1,16 +1,22 @@
 const mongoose = require("mongoose")
 
 const ticketListSchema = new mongoose.Schema({
-    employee: { type: String, required: [false, "Employee  is required"] },
+    _id: { type: String, default:"TIC-0001" },
+    description: { type: String, required: [true, "Description  is required"] },
     title: { type: String, required: [true, " project title is required"] },
     department:{type:String, required:[true,'department is required']},
     openAt:{type:Date, required:true, default:Date.now()} ,
-    //    activity:{type:mongoose.Schema.Types.ObjectId, ref:""},
-    //    agentName:{type:String, required:[true,'agent name is required']},
+    createdBy:{type:String},
+    closed: {
+        type: Boolean,
+        default: false,
+    },
      priority:{ type:String, required: [false," required priority "]},
     comment: [{ 
         type: mongoose.Schema.Types.ObjectId, ref:"ticketComment" 
-    }]
+    }],
+    likesBy: [{ type: mongoose.Schema.Types.ObjectId, ref:"ticketLikes"}],
+    likes: [{ type:String}]
    
 })
 
