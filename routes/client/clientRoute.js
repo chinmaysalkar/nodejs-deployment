@@ -1,7 +1,7 @@
 const express=require("express")
 const router=express.Router();
 const { deleteClient,updateClient,searchClients,getClientData,createClients, }=require("../../controllers/clientcontroller")
-const { deleteProject,updateProject,searchProject,createData,getAllData, upcomingProject, }=require("../../controllers/projectcontroller")
+const { deleteProject,updateProject,searchProject,createData,getAllData, upcomingProject, ongoingProject, viewOngoing, }=require("../../controllers/projectcontroller")
 const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
 const { addTodoList,getTodoList,deleteTodoList, updateToDo, }=require("../../controllers/todoController")
 const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment, singleTicketData, likeTicket, closeTicket }=require("../../controllers/ticketController");
@@ -23,8 +23,10 @@ router.delete("/deleteClient/:clientId",deleteClient)
 router.post("/pDetails/:clientId", createData)
 router.get('/pData', getAllData),
 router.get("/upcoming", upcomingProject)
+router.get("/ongoing", viewOngoing)
 router.get('/searchProject/:key', searchProject)
 router.put("/updateProject/:projectId", updateProject)
+router.put("/addToOngoing/:projectId", ongoingProject)
 router.delete("/deleteProject/:projectId", deleteProject)
 
 //taskboard

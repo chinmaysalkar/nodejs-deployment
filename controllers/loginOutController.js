@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const {validationResult} = require('express-validator');
-
+const User = require("../models/user/usermodel")
 const Profile = require('../models/user/profileModel.js'); 
 const Blacklist = require('../models/user/blacklistSchema.js');
 const AccessTokenModel = require('../models/user/accessTokenSchema.js');
@@ -18,7 +18,8 @@ const loginUser = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const userData = await Profile.findOne({ email: email });
+        // const userData = await Profile.findOne({ email: email });
+        const userData = await User.findOne({ email: email });
 
         if (!userData) {
             return res.status(404).json({ 

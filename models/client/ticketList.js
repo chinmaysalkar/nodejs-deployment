@@ -16,7 +16,11 @@ const ticketListSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref:"ticketComment" 
     }],
     likesBy: [{ type: mongoose.Schema.Types.ObjectId, ref:"ticketLikes"}],
-    likes: [{ type:String}]
+    likes: [{ type:String}],
+    activity:[{ type: String }],
+    ticketDoc: {
+        type: String
+    },
    
 })
 

@@ -1,8 +1,10 @@
 
 const Client = require("../models/client/clientSchema");
+const User =require("../models/user/usermodel")
 const toDoList = require("../models/client/todoList");
 const bcrypt = require('bcrypt');
-
+const {uploadClientDocToDrive}=require("../middlewares/upload")
+const { sendMail } = require("../middlewares/mailer");
 
    //client
     const createClients= async(req,res)=>{
@@ -10,14 +12,56 @@ const bcrypt = require('bcrypt');
             const maxUserId = await Client.findOne({}, { _id: 1 }, { sort: { _id: -1 } }).exec();
             const startingId = maxUserId ? parseInt(maxUserId._id.split('-')[1]) + 1 : 1;
             const newUserId = `CLI-${startingId.toString().padStart(4, '0')}`;
-            
-            const saltRounds = 10;
-            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+            if (!req.body.password) {
+                return res.status(400).json({ success: false, error: 'Password is required' });
+            }
+            // const saltRounds = 10;
+            // const salt = await bcrypt.genSalt(saltRounds);
+            const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
             const newClient = new Client({ ...req.body, _id: newUserId, password: hashedPassword })
             
+            //check client is already present or not 
+            const existingUser = await Client.findOne({ email: req.body.email });
+            if (existingUser) {
+                return res.status(400).json({ success: false, error: 'Client with this Email already exists ' });
+            }
+            //also save data to the user file
+            const user = new User({
+                ...req.body,
+                _id: newUserId,
+                password: hashedPassword,
+            });
+            const savedUser=await user.save();
+            
+            
+            
+            // Upload profile photo to Google Drive after saving user data to MongoDB
+            if (req.body.profilePhoto) {
+               
+                    const _id = newUserId;
+                    const photoPath = req.body.profilePhoto;
+                    // Assuming savedUser is the user object returned after saving to MongoDB
+                    const fileId = await uploadClientDocToDrive(_id, photoPath);
+
+                    // Update the user's profilePhoto field with the Google Drive file ID
+                    savedUser.profilePhoto = fileId;
+            }else{
+                    console.error(error);
+                    return res.status(400).json({
+                        message: "Error occurred while uploading photo ",
+                    });
+                } 
+            const email = req.body.email
+            const msg = '<p>Hii ' + req.body.firstName + ' ' + req.body.lastName + ', your account has been created successfully. Please <a href="http://localhost:3000/verify?id=' + newUserId + '">verify</a> your mail </p>';
+            
+            sendMail(email, ' Verify Account', msg);
             const saveClient = await newClient.save()
             res.status(200).json({message:"new client created succesfully",saveClient})
-
+            
+           
+         
+           
             }catch(error){
                 console.error(error)
                 res.status(500).json({message:"internal server error", error})
@@ -85,12 +129,14 @@ const bcrypt = require('bcrypt');
         }
 
     }
-const deleteClient = async (req, res) => {
+    const deleteClient = async (req, res) => {
         try {
             const dropClient = await Client.findByIdAndDelete(req.params.clientId)
             if (!dropClient) {
                 return res.status(404).json({ error: "client not found" });
             }
+            await User.findByIdAndDelete(dropClient)
+            console.log(dropClient)
             res.status(200).json({ message: "client deleted succesfully", dropClient })
 
         } catch (error) {

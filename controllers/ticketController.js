@@ -4,6 +4,7 @@ const User=require("../models/user/usermodel")
 const ticketLikes= require("../models/client/ticketLikes")
 const { sendMail } = require("../middlewares/mailer");
 const Profile = require("../models/user/profileModel")
+const { uploadClientDocToDrive } = require("../middlewares/upload")
 
 //ticket 
 const addNewTicket = async (req, res) => {
@@ -22,7 +23,22 @@ const addNewTicket = async (req, res) => {
              _id: newUserId,
             createdBy: req.params.userId })
       
-        // newTicket.employee=user.fullName
+       
+        // if (req.body.ticketDoc) {
+
+        //     const _id = newUserId;
+        //     const photoPath = req.body.ticketDoc;
+        //     // Assuming savedUser is the user object returned after saving to MongoDB
+        //     const fileId = await uploadClientDocToDrive(_id, photoPath);
+
+        //     // Update the user's profilePhoto field with the Google Drive file ID
+        //     newTicket.ticketDoc = fileId;
+        // } else {
+        //     console.error(error);
+        //     return res.status(400).json({
+        //         message: "Error occurred while uploading photo ",
+        //     });
+        // } 
         const result = await newTicket.save()
 
         res.status(200).json({ message: "ticket created succesfully", ticket: result })
@@ -54,7 +70,7 @@ const getAllTicketData = async (req, res) => {
         const ticketData = await ticketList
             .find()
             .populate({ path: 'comment', select: ["sender", "message"] })
-            .populate({ path: 'likesBy', select: ["like_By"] })
+            .populate({ path: 'likesBy'})//select: ["like_By"]
         
         res.status(200).json({ message: "ticket data is shown succesfully", ticketData })
 
@@ -140,7 +156,8 @@ const closeTicket=async(req,res)=>{
 const addTicketcomment = async (req, res) => {
     try {
          userId = req.user.userId
-      const user =await Profile.findById(userId)
+        
+      const user =await User.findById(userId)
         
         if (!user){
             return res.status(404).json("user not found")
@@ -156,7 +173,7 @@ const addTicketcomment = async (req, res) => {
             return res.status(400).json({ message: 'Ticket is already closed' });
         }
        
-        const commentReply = new ticketComment({...req.body, sender:user.fullName});
+        const commentReply = new ticketComment({ ...req.body, sender: user.firstName });
         
         
         const result = await commentReply.save();
@@ -171,9 +188,11 @@ const addTicketcomment = async (req, res) => {
     //            \n  result.message
             
     //     sendMail(ticketCreator.email, subject, msg);
-    //     await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id } });
-        
-        res.status(200).json({ message: " comment succesfully", result })
+       
+         res.status(200).json({ message: " comment succesfully", result })
+         const reply=ticket.comment.length
+        console.log(reply)
+        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id , activity:reply } });
         
     } catch (error) {
         console.error(error)
@@ -235,9 +254,10 @@ const updateComment=async (req,res)=>{
 const likeTicket = async (req,res)=>{
     try{
         userId = req.user.userId
-       
+       console.log(userId)
         //check the user 
-        const user = await Profile.findById(userId)
+        const user = await User.findById(userId)
+        console.log(user)
         if (!user) {
             return res.status(404).json("user not found")
         } 
@@ -247,11 +267,12 @@ const likeTicket = async (req,res)=>{
             console.error("Ticket not found for like the post. ticket ID:", req.params.ticketId);
             return res.status(404).json({ message: "ticket not found " })
         }
-          const likes = new ticketLikes({ ...req.body, likeBy: user.fullName, likeUserId: userId });
+        const likes = new ticketLikes({ ...req.body, likeBy: user.fullName, likeUserId: req.user.userId });
         const result = await likes.save();
         //count likes
         const likesCount= ticket.likesBy.length
-        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { likesBy: result._id, likes:likesCount } });
+        
+        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { likesBy: result._id, likes: likesCount } });
         
         res.status(200).json({ message: "  succesfully like the post", result })
 

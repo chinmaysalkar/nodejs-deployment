@@ -46,8 +46,41 @@ const uploadProfilePhotoToDrive = async function (userId, photoPath) {
 }
 
 
+//Upload client Documentation  
+const uploadClientDocToDrive = async function (_id, photoPath) {
+  try {
+    if (!fs.existsSync(photoPath)) {
+      throw new Error(`File ${photoPath} not found`);
+    }
+
+    const response = await drive.files.create({
+      requestBody: {
+        name: `${_id}_profilePhoto_${Date.now()}.jpg`, // Set file name
+        parents: ['1skD4UQyslqE-LawhW0ceHLrpG5_5V4Qj'], // Set folder ID where you want to upload
+      },
+      media: {
+        mimeType: 'image/jpeg', // Set the MIME type of the file
+        body: fs.createReadStream(photoPath), // Read the file from disk
+      },
+    });
+
+    // Return the file ID or URL for later use
+    //return response.data.id; // You can also return response.data.webViewLink if you want to get the file URL
+    return response.data.webViewLink;
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+    console.error('Error uploading profile photo to Google Drive:', error);
+    //throw error;
+  }
+}
+
+
 
 
 module.exports = {
-    uploadProfilePhotoToDrive
+    uploadProfilePhotoToDrive,
+  uploadClientDocToDrive
 }
