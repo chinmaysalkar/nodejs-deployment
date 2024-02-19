@@ -224,3 +224,40 @@
 //             error: error.message });
 //     }
 // };
+
+// <<<<<<<<<<<<<<  ✨ Codeium Command ⭐ >>>>>>>>>>>>>>>>
+// // Create a new schema for salary details
+// const mongoose = require('mongoose');
+
+// const salarySchema = new mongoose.Schema({
+//     userId: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'Profile',
+//     },
+//     allowances: {
+//         type: Number,
+//         required: true
+//     },
+//     deductions: {
+//         type: Number,
+//         required: true
+//     },
+//     // Add more fields as needed for salary details
+
+// });
+
+// // Create a model for the Salary collection
+// const Salary = mongoose.model('Salary', salarySchema);
+
+// // Inside the code where you save the user profile, also save the salary details
+// // Assuming salaryDetails contains the allowances, deductions, and other salary fields
+// const salaryDetails = {
+//     userId: savedUser.userId,
+//     allowances: 2000, // Example value, replace with actual value
+//     deductions: 500, // Example value, replace with actual value
+//     // Add more fields as needed
+// };
+
+// const newSalary = new Salary(salaryDetails);
+// await newSalary.save();
+// <<<<<<<  f2ae6cc8-e007-418e-9e30-9e412b6877f3  >>>>>>>¯

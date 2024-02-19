@@ -28,7 +28,23 @@ const createProfile = async (req, res) => {
         designation,
         role,
         password,
-        profilePhoto
+        profilePhoto,
+        
+          
+          HRA,
+          DA,
+          medicalInsurance,
+          conveyanceAllowance,
+          otherAllowances,
+          basicPay,
+          
+            
+              deductionId,
+              taxDeduction,
+              deductionForLeave,
+              providentFund
+            
+          
       } = req.body;
 
 
@@ -61,6 +77,23 @@ const createProfile = async (req, res) => {
         username: mergedName,
         password: hashedPassword,
         profilePhoto,
+        salary:{
+          
+          HRA,
+          DA,
+          medicalInsurance,
+          conveyanceAllowance,
+          otherAllowances,
+          basicPay,
+          deduction:[
+            {
+              deductionId,
+              taxDeduction,
+              deductionForLeave,
+              providentFund
+            }
+          ]
+        }
       });
 
 
@@ -99,6 +132,7 @@ const createProfile = async (req, res) => {
       }
     }
     const savedUser = await updatedProfile.save();
+    
     await newUser.save();
   
       // const msg =
