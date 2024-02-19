@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
 
         
         const profile = new Profile({
-            
+            userId: savedUser._id,
             email: req.body.email,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -44,9 +44,9 @@ const createUser = async (req, res) => {
         });
         await profile.save();
 
-        // const msg = '<p>Hii '+firstName+' '+lastName+', your account has been created successfully. Please <a href="http://localhost:3000/verify?id='+savedUser._id+'">verify</a> your mail </p>';
+        const msg = '<p>Hii '+firstName+' '+lastName+', your account has been created successfully. Please <a href="http://localhost:3000/verify?id='+savedUser._id+'">verify</a> your mail </p>';
 
-        // sendMail(email, ' Verify Account', msg);
+        sendMail(email, ' Verify Account', msg);
 
         return res.status(200).json({ 
             success: true ,message: "Registered successfully", data: savedUser

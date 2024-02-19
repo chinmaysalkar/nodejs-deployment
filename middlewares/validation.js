@@ -44,7 +44,8 @@ const otpValidation =[
 ]
 const profileValidation =[
     check("email","Please enter valid email").not().isEmpty(),
-    check("fullName","Name is required").not().isEmpty(),
+    check("firstName","Name is required").not().isEmpty(),
+    check("lastName","Name is required").not().isEmpty(),
     check("mobile","Please enter valid mobile number").not().isEmpty().isLength(10),
     check("department","Department is required").not().isEmpty(),
     check("designation","Designation is required").not().isEmpty(),
@@ -57,7 +58,7 @@ const profileValidation =[
         minSymbols: 1,
         maxLength: 14
     }),
-    //check("profilePhoto","Profile picture is required").not().isEmpty()
+    check("profilePhoto","Profile picture is required").optional().not().isEmpty()
 ]
 
 const updateProfileValidation =[

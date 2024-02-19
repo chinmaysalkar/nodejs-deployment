@@ -29,7 +29,7 @@ router.post('/login',loginValidation, loginUser)
 
 router.get('/logout',verifyToken, logout) 
 router.get('/getLoginLogoutLog',verifyToken, getLoginLogoutStatsByDate)  
-router.post('/updateProfile',verifyToken, updateProfileValidation, updateProfile); 
+router.post('/updateProfile', updateProfileValidation, updateProfile); 
 router.get('/viewProfile',verifyToken, viewProfile); 
 router.delete('/deleteProfile',verifyToken, deleteProfile)
 router.post('/updateVerificationStatus',verifyToken, updateVerificationStatus); 

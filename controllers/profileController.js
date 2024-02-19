@@ -35,7 +35,8 @@ const createProfile = async (req, res) => {
 
 
       const existingProfile = await Profile.findOne({ email: email });
-      if (existingProfile) {
+      const existingUser = await User.findOne({ email: email });
+      if (existingProfile || existingUser) {
         return res.status(400).json({
           success: false,
           error: "User profile with this Email already exists. Please try updating the profile.",
@@ -65,7 +66,7 @@ const createProfile = async (req, res) => {
       });
 
 
-      const savedUser = await updatedProfile.save();
+      
 
       const newUser = new User({
         email,
@@ -74,25 +75,34 @@ const createProfile = async (req, res) => {
         password: hashedPassword,
         
       });
-      await newUser.save();
+      
+
+      
 
       // Upload profile photo to Google Drive after saving user data to MongoDB
+      if (profilePhoto) {
       try {
-        const userId = savedUser.userId;
-        const photoPath = savedUser.profilePhoto;
+        const userId = nextId ;
+        const photoPath = profilePhoto;
         // Assuming savedUser is the user object returned after saving to MongoDB
         const fileId = await uploadProfilePhotoToDrive(userId, photoPath);
 
         // Update the user's profilePhoto field with the Google Drive file ID
-        savedUser.profilePhoto = fileId;
+        //savedUser.profilePhoto = fileId;
+
+        
       } catch (error) {
-        console.error('Error occurred:', error);
-        res.status(500).json({
-          success: false,
-          message: "Error occurred while uploading photo and updating user's profile",
-        });
+        console.error('Error occurred while uploading photo and updating user\'s profile:', error);
+
+        // res.status(400).json({
+        //   success: false,
+        //   message: "Error occurred while uploading photo and updating user's profile",
+        // });
       }
-    
+    }
+    const savedUser = await updatedProfile.save();
+    await newUser.save();
+  
       // const msg =
       //   "<p>Hii " +
       //   fullName +
@@ -104,7 +114,7 @@ const createProfile = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Profile created successfully",
-        data: updatedProfile,
+        data: savedUser,
       });
     } catch (error) {
         res.status(400).json({ 
@@ -125,6 +135,9 @@ const updateProfile = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Profile not found' });
         }
 
+        if (req.body.userId) {
+          profileData.userId = req.body.userId;
+        }
         // Check which fields are present in the request body and update accordingly
         if (req.body.email) {
             profileData.email = req.body.email;
