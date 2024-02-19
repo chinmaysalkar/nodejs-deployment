@@ -1,17 +1,16 @@
 const Project = require("../models/client/projectSchema");
 const Client = require("../models/client/clientSchema");
-
+const upComing = require("../models/client/upcomingProject")
 //project
 const createData = async (req, res) => {
     try {
-
-        const project = new Project(req.body);
-        console.log(req.params.clientId)
         const client = await Client.findById(req.params.clientId)
         if (!client) {
             console.error("Client not found for project creation. Client ID:", req.params.clientId);
             return res.status(404).json({ message: "client not found for this project please create a client first" })
         }
+        const project = new Project({ ...req.body, owner: client.clientName});
+        console.log (req.body)
         const result = await project.save();
         client.projects.push(result._id);
         await client.save(result._id);
@@ -25,8 +24,8 @@ const createData = async (req, res) => {
 const getAllData = async (req, res) => {
     try {
         const project = await Project.find()
-              .populate({ path: "team", select: ["employeeName", "_id"] })
-            .populate({ path: "task", select: ["taskname", "_id"] })
+            .populate({ path: "team", select: ["firstName", "_id"] })
+              .populate({ path: "task", select: ["taskname", "_id"] })
         res.status(200).json({ message: "Project created succesfully", project })
 
     } catch (error) {
@@ -89,11 +88,22 @@ const deleteProject = async (req, res) => {
         res.status(500).json({ error: "Internal server error", error });
     }
 }
+const upcomingProject =async (req,res)=>{ 
+    try{
+        const upcoming = await Project.find().select('owner milestone priority duration team')
+        res.status(200).json({ message: "Upcoming project saved succesfully", upcoming })
 
+    }catch(error){
+        console.error(error)
+        res.status(500).json({message:"internal server error"})
+    }
+}
+  
 module.exports = {
     deleteProject,
     updateProject,
     searchProject,
     createData,
     getAllData,
+    upcomingProject,
 }

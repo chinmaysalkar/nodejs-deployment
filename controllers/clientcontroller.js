@@ -15,8 +15,6 @@ const bcrypt = require('bcrypt');
             const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
             const newClient = new Client({ ...req.body, _id: newUserId, password: hashedPassword })
             
-            
-
             const saveClient = await newClient.save()
             res.status(200).json({message:"new client created succesfully",saveClient})
 

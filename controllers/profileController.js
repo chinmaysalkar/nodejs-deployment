@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const { validationResult } = require("express-validator");
 
 const Profile = require("../models/user/profileModel");
-const User = require("../models/user/userModel");
+const User = require("../models/user/usermodel");
 
 const { deleteOldAccessToken } = require('../middlewares/blacklist');
 const {uploadProfilePhotoToDrive} = require('../middlewares/upload')
@@ -19,8 +19,6 @@ const createProfile = async (req, res) => {
         return res.status(400).json({ success: false, error: errors.array() });
       }
       
-      
-
       const {
         email,
         firstName,
@@ -183,7 +181,6 @@ const viewProfile = async (req, res) => {
              error: error.message });
     }
 }
-
 const deleteProfile = async (req, res) => {
     const{}=req.body();
     try {
