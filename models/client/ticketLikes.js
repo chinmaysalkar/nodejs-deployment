@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const ticketLikeSchema = new mongoose.Schema({
-    likeBy: { type: String, },
+    like_By: { type: String, },
     likeUserId:{type:String},
     msgAt: { type: Date, default: Date.now() },
 })

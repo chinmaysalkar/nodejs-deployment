@@ -1,9 +1,9 @@
 const express=require("express")
 const router=express.Router();
 const { deleteClient,updateClient,searchClients,getClientData,createClients, }=require("../../controllers/clientcontroller")
-const { deleteProject,updateProject,searchProject,createData,getAllData, }=require("../../controllers/projectcontroller")
+const { deleteProject,updateProject,searchProject,createData,getAllData, upcomingProject, }=require("../../controllers/projectcontroller")
 const { addNewTask,getAllTaskData,updateTaskboard,searchTask,deleteTask,getTaskPercentage } = require("../../controllers/taskcontroller")
-const { addTodoList,getTodoList,deleteTodoList, }=require("../../controllers/todoController")
+const { addTodoList,getTodoList,deleteTodoList, updateToDo, }=require("../../controllers/todoController")
 const { getAllTicketData, searchTickets, updateTicket, addTicketcomment,addNewTicket, deleteTicket, getAllComment,  updateComment, deleteComment, singleTicketData, likeTicket, closeTicket }=require("../../controllers/ticketController");
 const { verifyToken } = require("../../middlewares/token");
 const { mailToClient } = require("../../controllers/sendMailController");
@@ -21,7 +21,8 @@ router.delete("/deleteClient/:clientId",deleteClient)
 
 //project
 router.post("/pDetails/:clientId", createData)
-router.get('/pData', getAllData)
+router.get('/pData', getAllData),
+router.get("/upcoming", upcomingProject)
 router.get('/searchProject/:key', searchProject)
 router.put("/updateProject/:projectId", updateProject)
 router.delete("/deleteProject/:projectId", deleteProject)
@@ -46,7 +47,8 @@ router.delete("/deleteticket/:ticketId", deleteTicket)
 //todo
 router.post("/addDoTask", addTodoList)
 router.get("/getTodoList", getTodoList)
-router.delete("/deleteTask/:taskId", deleteTodoList)
+router.delete("/deleteTodoList/:Id", deleteTodoList)
+router.put("/Listupdate/:Id", updateToDo)
 
 //comment,like,unlike
 router.post("/comment/:ticketId", verifyToken, addTicketcomment)

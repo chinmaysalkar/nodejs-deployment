@@ -1,26 +1,29 @@
-const ticketList = require("../models/client/ticketList");
+const  ticketList = require("../models/client/ticketList")
 const ticketComment = require("../models/client/ticketComment");
 const User=require("../models/user/usermodel")
 const ticketLikes= require("../models/client/ticketLikes")
 const { sendMail } = require("../middlewares/mailer");
+const Profile = require("../models/user/profileModel")
 
 //ticket 
 const addNewTicket = async (req, res) => {
     try {
+        //gives unique Id
         const maxUserId = await ticketList.findOne({}, { _id: 1 }, { sort: { _id: -1 } }).exec();
         const startingId = maxUserId ? parseInt(maxUserId._id.split('-')[1]) + 1 : 1;
         const newUserId = `TIC-${startingId.toString().padStart(4, '0')}`;
         
-        const user = await User.findById(req.params.userId)
+        const user = await Profile.findById(req.params.userId)
         if (!user) {
             return res.status(404).json({ message: "Employee not found" })
         }
-        const newTicket = new ticketList({ ...req.body, _id: newUserId, createdBy: req.params.userId })
+        const newTicket = new ticketList({ 
+            ...req.body,
+             _id: newUserId,
+            createdBy: req.params.userId })
       
-        newTicket.employee=user.fullName
+        // newTicket.employee=user.fullName
         const result = await newTicket.save()
-// console.log(createdBy)
-      
 
         res.status(200).json({ message: "ticket created succesfully", ticket: result })
 
@@ -33,10 +36,11 @@ const addNewTicket = async (req, res) => {
 const searchTickets = async (req, res) => {
     try {
         const key = req.params.key;
-        const searchQuery = {};
-        if (key) {
-            searchQuery.title = new RegExp(key, 'i');
-        }
+        const searchField = ['title', '_id', 'department', 'priority']
+        const searchQuery = { 
+            $or:searchField.map(field=>({[field]: new RegExp( key , 'i')}))
+        };
+        
         const searchResults = await ticketList.find(searchQuery);
 
         res.status(200).json({ message: "search result is :", searchResults })
@@ -50,8 +54,8 @@ const getAllTicketData = async (req, res) => {
         const ticketData = await ticketList
             .find()
             .populate({ path: 'comment', select: ["sender", "message"] })
-            .populate({ path: 'likesBy'})
-
+            .populate({ path: 'likesBy', select: ["like_By"] })
+        
         res.status(200).json({ message: "ticket data is shown succesfully", ticketData })
 
     } catch (error) {
@@ -62,8 +66,12 @@ const getAllTicketData = async (req, res) => {
 const singleTicketData = async (req, res) => {
     try {
         const ticketData = await ticketList
-        .findById(req.params.ticketId)
-        .populate({ path: 'comment', select: ["sender", "message"] })
+           .findById(req.params.ticketId)
+           .populate({ path: 'comment', select: ["sender", "message"] })
+            .populate({ path: 'likesBy', select: ["likeBy"] })
+
+            // const likeCount= ticketData.likesBy.length 
+            //  ticketData.likes=likeCount
         res.status(200).json({ message: "ticket data is shown succesfully", ticketData })
 
     } catch (error) {
@@ -119,7 +127,7 @@ const closeTicket=async(req,res)=>{
         }
         ticket.closed=true;
         await ticket.save()
-
+        res.status(200).json({message:"ticket is closed"})
     } catch (error) {
         console.error(error)
         res.status(500).json({ messaage: "internal server error" })
@@ -131,13 +139,13 @@ const closeTicket=async(req,res)=>{
 
 const addTicketcomment = async (req, res) => {
     try {
-
          userId = req.user.userId
-      const user =await User.findById(userId)
+      const user =await Profile.findById(userId)
+        
         if (!user){
             return res.status(404).json("user not found")
         } 
-        //check ticket is available or not 
+        //check ticket is available or not n
         const ticket = await ticketList.findById(req.params.ticketId)
         if (!ticket) {
             console.error("Ticket not found for comment. ticket ID:", req.params.ticketId);
@@ -152,17 +160,18 @@ const addTicketcomment = async (req, res) => {
         
         
         const result = await commentReply.save();
-      //mail to the ticket creator
-        const ticketCreator = await User.findById(ticket.createdBy);
-       console.log(email)
-       const subject ="Commented on your ticket"
-      const msg =
-            "<p>Hey " +
-          user.fullName +
-            ',is commented on your ticket ' 
+         //mail to the ticket creator
+    //     const ticketCreator = await Profile.findById(ticket.createdBy);
+
+    //    const subject ="Commented on your ticket"
+    //   const msg =
+    //         "<p>Hey " +
+    //       user.username +
+    //         ', is commented on your ticket '
+    //            \n  result.message
             
-        sendMail(ticketCreator.email, subject, msg);
-        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id } });
+    //     sendMail(ticketCreator.email, subject, msg);
+    //     await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { comment: result._id } });
         
         res.status(200).json({ message: " comment succesfully", result })
         
@@ -226,11 +235,13 @@ const updateComment=async (req,res)=>{
 const likeTicket = async (req,res)=>{
     try{
         userId = req.user.userId
-        console.log(userId)
-        const user = await User.findById(userId)
+       
+        //check the user 
+        const user = await Profile.findById(userId)
         if (!user) {
             return res.status(404).json("user not found")
         } 
+        // check the ticket 
         const ticket = await ticketList.findById(req.params.ticketId)
         if (!ticket) {
             console.error("Ticket not found for like the post. ticket ID:", req.params.ticketId);
@@ -238,8 +249,13 @@ const likeTicket = async (req,res)=>{
         }
           const likes = new ticketLikes({ ...req.body, likeBy: user.fullName, likeUserId: userId });
         const result = await likes.save();
-        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { likesBy: result._id } });
+        //count likes
+        const likesCount= ticket.likesBy.length
+        await ticketList.findByIdAndUpdate(req.params.ticketId, { $push: { likesBy: result._id, likes:likesCount } });
+        
         res.status(200).json({ message: "  succesfully like the post", result })
+
+
     } catch (error) {
         console.error(error)
         res.status(500).json({ messaage: "internal server error", error })
