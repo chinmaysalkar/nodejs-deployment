@@ -98,6 +98,41 @@ const upcomingProject =async (req,res)=>{
         res.status(500).json({message:"internal server error"})
     }
 }
+const ongoingProject =async (req,res)=>{
+    try {
+
+        const projectId = req.params.projectId
+        const ongoing = await Project.findById({_id:projectId})
+        console.log(projectId)
+        if (!ongoing){
+            return res.status(404).json({messsage:" project not found "})
+        }
+        ongoing.status=true
+        await ongoing.save()
+
+            res.status(200).json({ message: "project update for ongoing succesfully "})
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "internal server error" })
+    }
+}
+const viewOngoing =async(req,res)=>{
+    try {
+        const viewOngoingProject = await Project.find({ status: true })
+            .populate({ path: "team", select: ["firstName", "_id"] })
+            .populate({ path: "task", select: ["taskname", "_id"] })
+        if (viewOngoingProject.length>0){
+            res.status(200).json({message:"ongoing project show succesfully",viewOngoingProject})
+        }else{
+            res.status(404).json({message:"no ongoing project found"})
+        }
+    
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "internal server error" })
+    } 
+}
   
 module.exports = {
     deleteProject,
@@ -106,4 +141,7 @@ module.exports = {
     createData,
     getAllData,
     upcomingProject,
+    ongoingProject,
+    viewOngoing
+
 }
